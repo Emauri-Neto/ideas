@@ -13,6 +13,8 @@ import (
 
 type queries interface {
 	Schema() []string
+	SaveMigration() string
+	GetIndexLastMigration() string
 	GetUsers() string
 	GetUserByEmail() string
 	CreateUser() string
@@ -73,11 +75,23 @@ func MountDB() (*Database, error) {
 }
 
 func (db *Database) Migrate() error {
+	last_migration := -1
+
+	_ = db.sqlx.Get(&last_migration, db.query.GetIndexLastMigration())
 	for i, query := range db.query.Schema() {
+		if i <= last_migration {
+			continue
+		}
 		_, _m := db.sqlx.Exec(query)
-		fmt.Printf("Migrate: %d \n query: %v\n", i, query)
+
 		if _m != nil {
 			return fmt.Errorf("falha realizando a migration -> %w", _m)
+		}
+
+		_, _l := db.sqlx.Exec(db.query.SaveMigration(), i, query)
+
+		if _l != nil {
+			return fmt.Errorf("falha inserindo a migration no banco de dados -> posicao: %d \nerror: %s", i, query)
 		}
 	}
 
