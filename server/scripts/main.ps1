@@ -4,6 +4,7 @@ $env:DB_PASS = "123456"
 $env:DB_PORT = "5432"
 $env:DB_HOST = "0.0.0.0"
 $env:DB_USER = "admin"
+$env:JWT_SECRET = "segredo"
 
 
 # Caso usem isso, só precisa rodar uma vez e depois recomentar
