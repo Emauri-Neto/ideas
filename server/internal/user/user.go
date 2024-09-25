@@ -11,8 +11,6 @@ import (
 	"github.com/google/uuid"
 )
 
-
-
 func List(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
@@ -43,13 +41,26 @@ func SignIn(db *db.Database) func(http.ResponseWriter, *http.Request) {
 
 		if _u != nil {
 			utils.WriteResponse(w, http.StatusNotFound, _u.Error())
+			return
 		}
 
 		if !auth.CompareValue(u.Password, []byte(user.Password)) {
 			utils.WriteResponse(w, http.StatusUnauthorized, "Email ou Senha inválidos.")
+			return
 		}
 
-		utils.WriteResponse(w, http.StatusOK, "Login realizado com sucesso.")
+		secret, _ := utils.GetEnv("JWT_SECRET")
+
+		sec := []byte(secret)
+
+		token, err := auth.SignToken(sec, u.Id)
+
+		if err != nil {
+			utils.WriteResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		json.NewEncoder(w).Encode(map[string]string{"token": token})
 	}
 }
 
@@ -59,18 +70,21 @@ func SignUp(db *db.Database) func(http.ResponseWriter, *http.Request) {
 
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		_, _u := db.GetUserByEmail(user.Email)
 
 		if _u == nil {
 			utils.WriteResponse(w, http.StatusConflict, "Email já está em uso.")
+			return
 		}
 
 		hash, _hash := auth.HashValue(user.Password)
 
 		if _hash != nil {
 			utils.WriteResponse(w, http.StatusInternalServerError, _hash.Error())
+			return
 		}
 
 		_c := db.CreateAccount(types.User{
@@ -82,8 +96,9 @@ func SignUp(db *db.Database) func(http.ResponseWriter, *http.Request) {
 
 		if _c != nil {
 			utils.WriteResponse(w, http.StatusInternalServerError, _c.Error())
+			return
 		}
 
-		w.WriteHeader(http.StatusCreated)
+		utils.WriteResponse(w, http.StatusCreated, "Usuário criado com sucesso")
 	}
 }

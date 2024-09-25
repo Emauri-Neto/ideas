@@ -25,7 +25,7 @@ func WriteResponse(w http.ResponseWriter, status uint, message string) error {
 
 	r.Status = status
 	r.Message = message
-
+	w.WriteHeader(int(status))
 	w.Header().Set("Content-Type", "application/json")
 	return json.NewEncoder(w).Encode(r)
 }
