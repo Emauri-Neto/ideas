@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: "Plataforma idealizadora ideias.",
 };
 
-const roboto = Roboto({ subsets: ["latin"], weight: "400" });
+const inter = Inter({ subsets: ["latin"]});
 
 export default function RootLayout({
   children,
@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("antialiased", roboto.className)}>
+    <html lang="en" className={cn("antialiased", inter.className)}>
       <body className={"min-h-screen antialiased"}>
         <ThemeProvider
           attribute="class"
