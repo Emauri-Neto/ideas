@@ -3,7 +3,6 @@ package study
 import (
 	"encoding/json"
 	"ideas/db"
-	"ideas/internal/auth"
 	"ideas/types"
 	"ideas/utils"
 	"net/http"
@@ -18,38 +17,18 @@ func CreateStudy(db *db.Database) func(http.ResponseWriter, *http.Request) {
 		var study types.Study
 
 		if err := json.NewDecoder(r.Body).Decode(&study); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		var token, err = auth.GetTokenFromRequest(r)
-		if err != nil {
-			utils.WriteResponse(w, http.StatusUnauthorized, err.Error())
-			return
-		}
+		var idKey types.UserKey = "userId"
 
-		var userId string
-		userId, err = auth.GetUserFromToken(token)
+		userId := r.Context().Value(idKey).(string)
 
-		if err != nil {
-			utils.WriteResponse(w, http.StatusUnauthorized, err.Error())
-			return
-		}
-
-		var data_creation = types.Time{Id: uuid.New().String()}
-
-		_c := db.CreateTime(data_creation)
-
-		if _c != nil {
-			utils.WriteResponse(w, http.StatusInternalServerError, _c.Error())
-			return
-		}
-
-		_c = db.CreateStudy(types.Study{
+		_c := db.CreateStudy(types.Study{
 			Id:             uuid.New().String(),
 			Name:           study.Name,
 			Responsible_id: userId,
-			Time_id:        data_creation.Id,
 		})
 
 		if _c != nil {
@@ -68,47 +47,27 @@ func CreateThread(db *db.Database) func(http.ResponseWriter, *http.Request) {
 		var thread types.Thread
 
 		if err := json.NewDecoder(r.Body).Decode(&thread); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		vars := mux.Vars(r)
 		studyId := vars["id"]
 
-		var tokenStr, err = auth.GetTokenFromRequest(r)
+		var idKey types.UserKey = "userId"
 
-		if err != nil {
-			utils.WriteResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		userId := r.Context().Value(idKey).(string)
 
-		var userId string
-		userId, err = auth.GetUserFromToken(tokenStr)
-
-		if err != nil {
-			utils.WriteResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		err = db.IsStudyOwner(studyId, userId)
+		err := db.IsStudyOwner(studyId, userId)
 		if err != nil {
 			utils.WriteResponse(w, http.StatusUnauthorized, err.Error())
 			return
 		}
 
-		var data_creation = types.Time{Id: uuid.New().String()}
-		_c := db.CreateTime(data_creation)
-
-		if _c != nil {
-			utils.WriteResponse(w, http.StatusInternalServerError, _c.Error())
-			return
-		}
-
-		_c = db.CreateThread(types.Thread{
+		_c := db.CreateThread(types.Thread{
 			Id:             uuid.New().String(),
 			Name:           thread.Name,
 			Responsible_id: userId,
-			Time_id:        data_creation.Id,
 			Study_id:       studyId,
 		})
 

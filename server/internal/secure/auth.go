@@ -1,7 +1,9 @@
-package auth
+package secure
 
 import (
+	"context"
 	"fmt"
+	"ideas/types"
 	"ideas/utils"
 	"net/http"
 	"strings"
@@ -100,15 +102,38 @@ func GetUserFromToken(tokenStr string) (string, error) {
 		return "", err
 	}
 
-	// Acessa diretamente as claims
 	claims := token.Claims.(jwt.MapClaims)
 	value := claims["sub"]
 
 	if subValue, ok := value.(string); ok {
-		return subValue, nil // Retorna o valor como string
+		return subValue, nil
 	}
 
 	return "", fmt.Errorf("o valor da chave 'sub' não é uma string")
+}
+
+func GetUserFromTokenMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token, err := GetTokenFromRequest(r)
+		if err != nil {
+			utils.WriteResponse(w, http.StatusUnauthorized, err.Error())
+			return
+		}
+
+		var userId string
+		userId, err = GetUserFromToken(token)
+		if err != nil {
+			utils.WriteResponse(w, http.StatusUnauthorized, err.Error())
+			return
+		}
+
+		var idKey types.UserKey = "userId"
+
+		ctx := context.WithValue(r.Context(), idKey, userId)
+		r = r.WithContext(ctx)
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 func GetTokenFromRequest(r *http.Request) (string, error) {

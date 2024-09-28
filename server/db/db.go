@@ -19,7 +19,6 @@ type queries interface {
 	GetUsers() string
 	GetUserByEmail() string
 	CreateUser() string
-	CreateTime() string
 	CreateStudy() string
 	IsStudyOwner() string
 	CreateThread() string
@@ -57,7 +56,7 @@ func (db *Database) CreateAccount(u types.User) error {
 }
 
 func (db *Database) CreateStudy(s types.Study) error {
-	_, err := db.sqlx.Exec(db.query.CreateStudy(), s.Id, s.Name, s.Responsible_id, s.Time_id)
+	_, err := db.sqlx.Exec(db.query.CreateStudy(), s.Id, s.Name, s.Responsible_id)
 
 	return err
 }
@@ -80,13 +79,7 @@ func (db *Database) IsStudyOwner(id_study, id_user string) error {
 }
 
 func (db *Database) CreateThread(t types.Thread) error {
-	_, err := db.sqlx.Exec(db.query.CreateThread(), t.Id, t.Name, t.Study_id, t.Responsible_id, t.Time_id)
-
-	return err
-}
-
-func (db *Database) CreateTime(t types.Time) error {
-	_, err := db.sqlx.Exec(db.query.CreateTime(), t.Id)
+	_, err := db.sqlx.Exec(db.query.CreateThread(), t.Id, t.Name, t.Study_id, t.Responsible_id)
 
 	return err
 }

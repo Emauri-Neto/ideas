@@ -44,18 +44,6 @@ func createWorkspace() string {
 	`
 }
 
-func createTimeTable() string {
-	return `
-		CREATE TABLE time (
-    		id UUID PRIMARY KEY,
-    		date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    		week INTEGER,
-    		month INTEGER,
-    		year INTEGER
-		)
-	`
-}
-
 func createStudyTable() string {
 	return `
 		CREATE TABLE  study (
@@ -65,9 +53,9 @@ func createStudyTable() string {
 			methodology TEXT,
 			max_participants INTEGER,
 			participation_type TEXT,
-			time_id UUID NOT NULL,
+			created_at TIMESTAMPTZ DEFAULT (CURRENT_TIMESTAMP - INTERVAL '3 hours'),
+			
 			responsible_id UUID NOT NULL,
-			CONSTRAINT fk_time FOREIGN KEY (time_id) REFERENCES time (id) ON DELETE CASCADE,
 			CONSTRAINT fk_responsible FOREIGN KEY (responsible_id) REFERENCES users (id) ON DELETE CASCADE
 		)
 	`
@@ -81,10 +69,10 @@ func createDiscussionThreadTable() string {
 			max_participants INTEGER,
 			discussion_deadline DATE,
 			status TEXT,
-			time_id UUID NOT NULL,
+			created_at TIMESTAMPTZ DEFAULT (CURRENT_TIMESTAMP - INTERVAL '3 hours'),
+
 			responsible_id UUID NOT NULL,
 			study_id UUID NOT NULL,
-			CONSTRAINT fk_time FOREIGN KEY (time_id) REFERENCES time (id) ON DELETE CASCADE,
 			CONSTRAINT fk_responsible FOREIGN KEY (responsible_id) REFERENCES users (id) ON DELETE CASCADE,
 			CONSTRAINT fk_study FOREIGN KEY (study_id) REFERENCES study (id) ON DELETE CASCADE
 		)

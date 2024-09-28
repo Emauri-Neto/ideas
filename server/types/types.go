@@ -26,23 +26,15 @@ type RegisterCredentials struct {
 	Name            string
 }
 
-type Time struct {
-	Id    string    `json:"id" db:"id"`
-	Date  time.Time `json:"date" db:"date"`
-	Week  int       `json:"week" db:"week"`
-	Month int       `json:"month" db:"month"`
-	Year  int       `json:"year" db:"year"`
-}
-
 type Study struct {
-	Id                 string `json:"id" db:"id"`
-	Name               string `json:"name" db:"name"`
-	Objective          string `json:"objective" db:"objective"`
-	Methodology        string `json:"methodology" db:"methodology"`
-	Max_participants   string `json:"max_participants" db:"max_participants"`
-	Participation_type string `json:"participation_type" db:"participation_type"`
-	Time_id            string `json:"time_id" db:"time_id"`
-	Responsible_id     string `json:"responsible_id" db:"responsible_id"`
+	Id                 string    `json:"id" db:"id"`
+	Name               string    `json:"name" db:"name"`
+	Objective          string    `json:"objective" db:"objective"`
+	Methodology        string    `json:"methodology" db:"methodology"`
+	Max_participants   string    `json:"max_participants" db:"max_participants"`
+	Participation_type string    `json:"participation_type" db:"participation_type"`
+	CreatedAt          time.Time `json:"created_at" db:"created_at"`
+	Responsible_id     string    `json:"responsible_id" db:"responsible_id"`
 }
 
 type Thread struct {
@@ -51,7 +43,9 @@ type Thread struct {
 	Max_participants    int       `json:"max_participantes" db:"max_participants"`
 	Discussion_deadline time.Time `json:"discussion_deadline" db:"discussion_deadline"`
 	Status              string    `json:"status" db:"status"`
-	Time_id             string    `json:"time_id" db:"time_id"`
+	CreatedAt           time.Time `json:"created_at" db:"created_at"`
 	Responsible_id      string    `json:"responsible_id" db:"responsible_id"`
 	Study_id            string    `json:"study_id" db:"study_id"`
 }
+
+type UserKey string

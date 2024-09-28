@@ -7,7 +7,6 @@ func (d Driver) Schema() []string {
 		createMigrationTable(),
 		createUserTable(),
 		createWorkspace(),
-		createTimeTable(),
 		createStudyTable(),
 		createDiscussionThreadTable(),
 	}
@@ -31,15 +30,9 @@ func (d Driver) CreateUser() string {
 	`
 }
 
-func (d Driver) CreateTime() string {
-	return `
-		INSERT INTO time(id) VALUES ($1)
-	`
-}
-
 func (d Driver) CreateStudy() string {
 	return `
-		INSERT INTO study(id, name, responsible_id, time_id) VALUES ($1, $2, $3, $4)
+		INSERT INTO study(id, name, responsible_id) VALUES ($1, $2, $3)
 	`
 }
 
@@ -51,6 +44,6 @@ func (d Driver) IsStudyOwner() string {
 
 func (d Driver) CreateThread() string {
 	return `
-		INSERT INTO discussion_thread(id, name, study_id, responsible_id, time_id) VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO discussion_thread(id, name, study_id, responsible_id) VALUES ($1, $2, $3, $4)
 	`
 }
