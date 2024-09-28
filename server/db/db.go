@@ -35,8 +35,8 @@ func (db *Database) GetUsers() ([]types.User, error) {
 	return users, nil
 }
 
-func (db *Database) GetUserByEmail(email string) (types.RegisterCredentials, error) {
-	var user types.RegisterCredentials
+func (db *Database) GetUserByEmail(email string) (types.User, error) {
+	var user types.User
 
 	if err := db.sqlx.Get(&user, db.query.GetUserByEmail(), email); err != nil {
 		return user, err

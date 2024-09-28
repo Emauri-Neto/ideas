@@ -80,6 +80,11 @@ func SignUp(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
+		if user.Password != user.ConfirmPassword {
+			utils.WriteResponse(w, http.StatusConflict, "As senhas não coincidem.")
+			return
+		}
+
 		hash, _hash := auth.HashValue(user.Password)
 
 		if _hash != nil {

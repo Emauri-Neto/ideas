@@ -24,12 +24,22 @@ func createUserTable() string {
 			name TEXT NOT NULL,
 			email TEXT UNIQUE NOT NULL,
 			password TEXT NOT NULL,
-			expertise TEXT,
-			interests TEXT[],
-			roles TEXT[],
-			status TEXT,
-			created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-			updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+			created_at TIMESTAMPTZ DEFAULT (CURRENT_TIMESTAMP - INTERVAL '3 hours'),
+    		updated_at TIMESTAMPTZ DEFAULT (CURRENT_TIMESTAMP - INTERVAL '3 hours')
+		)
+	`
+}
+
+func createWorkspace() string {
+	return `
+		CREATE TABLE workspace(
+			id UUID PRIMARY KEY,
+			subject TEXT NOT NULL,
+			isPrivate BOOLEAN DEFAULT TRUE,
+			content TEXT NOT NULL,
+			user_id UUID NOT NULL,
+
+    		CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 		)
 	`
 }

@@ -6,6 +6,7 @@ func (d Driver) Schema() []string {
 	return []string{
 		createMigrationTable(),
 		createUserTable(),
+		createWorkspace(),
 	}
 }
 
@@ -17,7 +18,7 @@ func (d Driver) GetUsers() string {
 
 func (d Driver) GetUserByEmail() string {
 	return `
-		SELECT id, name, email, password FROM users WHERE email = $1
+		SELECT * FROM users WHERE email = $1
 	`
 }
 
