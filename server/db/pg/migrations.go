@@ -43,3 +43,38 @@ func createWorkspace() string {
 		)
 	`
 }
+
+func createStudyTable() string {
+	return `
+		CREATE TABLE  study (
+			id UUID PRIMARY KEY,
+			name TEXT NOT NULL,
+			objective TEXT,
+			methodology TEXT,
+			max_participants INTEGER,
+			participation_type TEXT,
+			created_at TIMESTAMPTZ DEFAULT (CURRENT_TIMESTAMP - INTERVAL '3 hours'),
+			
+			responsible_id UUID NOT NULL,
+			CONSTRAINT fk_responsible FOREIGN KEY (responsible_id) REFERENCES users (id) ON DELETE CASCADE
+		)
+	`
+}
+
+func createDiscussionThreadTable() string {
+	return `
+		CREATE TABLE discussion_thread (
+			id UUID PRIMARY KEY,
+			name TEXT NOT NULL,
+			max_participants INTEGER,
+			discussion_deadline DATE,
+			status TEXT,
+			created_at TIMESTAMPTZ DEFAULT (CURRENT_TIMESTAMP - INTERVAL '3 hours'),
+
+			responsible_id UUID NOT NULL,
+			study_id UUID NOT NULL,
+			CONSTRAINT fk_responsible FOREIGN KEY (responsible_id) REFERENCES users (id) ON DELETE CASCADE,
+			CONSTRAINT fk_study FOREIGN KEY (study_id) REFERENCES study (id) ON DELETE CASCADE
+		)
+	`
+}

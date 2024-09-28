@@ -3,6 +3,8 @@ package api
 import (
 	"fmt"
 	"ideas/db"
+	secure "ideas/internal/auth"
+	"ideas/internal/study"
 	"ideas/internal/user"
 	"net/http"
 
@@ -30,7 +32,12 @@ func (s *WebServer) Run() error {
 	auth.HandleFunc("/login", user.SignIn(s.db)).Methods("POST")
 
 	subrouter.HandleFunc("/users", user.List(s.db)).Methods("GET")
-	
+
+	subrouter.HandleFunc("/study", study.CreateStudy(s.db)).Methods("POST")
+	subrouter.HandleFunc("/study/{id}/thread", study.CreateThread(s.db)).Methods("POST")
+
+	subrouter.Use(secure.GetUserFromTokenMiddleware)
+
 	fmt.Printf("Servidor aqui -> %s 🔥", s.addr)
 	return http.ListenAndServe(s.addr, router)
 }

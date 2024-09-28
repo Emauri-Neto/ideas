@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"ideas/db/pg"
@@ -18,6 +19,9 @@ type queries interface {
 	GetUsers() string
 	GetUserByEmail() string
 	CreateUser() string
+	CreateStudy() string
+	IsStudyOwner() string
+	CreateThread() string
 }
 
 type Database struct {
@@ -47,6 +51,35 @@ func (db *Database) GetUserByEmail(email string) (types.User, error) {
 
 func (db *Database) CreateAccount(u types.User) error {
 	_, err := db.sqlx.Exec(db.query.CreateUser(), u.Id, u.Email, u.Password, u.Name)
+
+	return err
+}
+
+func (db *Database) CreateStudy(s types.Study) error {
+	_, err := db.sqlx.Exec(db.query.CreateStudy(), s.Id, s.Name, s.Responsible_id)
+
+	return err
+}
+
+func (db *Database) IsStudyOwner(id_study, id_user string) error {
+	var exists int
+
+	if err := db.sqlx.Get(&exists, db.query.IsStudyOwner(), id_study, id_user); err != nil {
+		if err == sql.ErrNoRows {
+			return errors.New("usuário não é dono do estudo ou estudo não existe")
+		}
+		return err
+	}
+
+	if exists != 1 {
+		return errors.New("falha ao verificar propriedade do estudo")
+	}
+
+	return nil
+}
+
+func (db *Database) CreateThread(t types.Thread) error {
+	_, err := db.sqlx.Exec(db.query.CreateThread(), t.Id, t.Name, t.Study_id, t.Responsible_id)
 
 	return err
 }

@@ -3,7 +3,7 @@ package user
 import (
 	"encoding/json"
 	"ideas/db"
-	"ideas/internal/auth"
+	secure "ideas/internal/auth"
 	"ideas/types"
 	"ideas/utils"
 	"net/http"
@@ -33,7 +33,7 @@ func SignIn(db *db.Database) func(http.ResponseWriter, *http.Request) {
 		var user types.LoginCredentials
 
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -44,7 +44,7 @@ func SignIn(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		if !auth.CompareValue(u.Password, []byte(user.Password)) {
+		if !secure.CompareValue(u.Password, []byte(user.Password)) {
 			utils.WriteResponse(w, http.StatusUnauthorized, "Email ou Senha inválidos.")
 			return
 		}
@@ -53,7 +53,7 @@ func SignIn(db *db.Database) func(http.ResponseWriter, *http.Request) {
 
 		sec := []byte(secret)
 
-		token, err := auth.SignToken(sec, u.Id)
+		token, err := secure.SignToken(sec, u.Id)
 
 		if err != nil {
 			utils.WriteResponse(w, http.StatusInternalServerError, err.Error())
@@ -85,7 +85,7 @@ func SignUp(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		hash, _hash := auth.HashValue(user.Password)
+		hash, _hash := secure.HashValue(user.Password)
 
 		if _hash != nil {
 			utils.WriteResponse(w, http.StatusInternalServerError, _hash.Error())
