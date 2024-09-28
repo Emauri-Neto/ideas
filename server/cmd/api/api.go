@@ -3,7 +3,7 @@ package api
 import (
 	"fmt"
 	"ideas/db"
-	"ideas/internal/secure"
+	secure "ideas/internal/auth"
 	"ideas/internal/study"
 	"ideas/internal/user"
 	"net/http"

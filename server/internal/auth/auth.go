@@ -1,4 +1,4 @@
-package secure
+package auth
 
 import (
 	"context"
@@ -65,18 +65,13 @@ func GetToken(tokenStr string) (*jwt.Token, error) {
 	return token, nil
 }
 
-func Authorize(tokenStr string) (bool, error) {
-
-	var token, err = GetToken(tokenStr)
-
-	if err != nil {
-		return false, err
-	}
+func Authorize(token *jwt.Token) (bool, error) {
 
 	if token.Valid {
 		return true, nil
 	}
 
+	var err error
 	if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
 			return false, fmt.Errorf("token malformado")
@@ -91,14 +86,14 @@ func Authorize(tokenStr string) (bool, error) {
 
 func GetUserFromToken(tokenStr string) (string, error) {
 
-	if _, err := Authorize(tokenStr); err != nil {
-		return "", err
-	}
-
 	var token *jwt.Token
 	token, err := GetToken(tokenStr)
 
 	if err != nil {
+		return "", err
+	}
+
+	if _, err := Authorize(token); err != nil {
 		return "", err
 	}
 

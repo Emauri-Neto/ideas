@@ -3,7 +3,7 @@ package user
 import (
 	"encoding/json"
 	"ideas/db"
-	"ideas/internal/secure"
+	secure "ideas/internal/auth"
 	"ideas/types"
 	"ideas/utils"
 	"net/http"
