@@ -4,8 +4,8 @@ import (
 	"errors"
 	"ideas/types"
 	"net/mail"
+	"regexp"
 	"strings"
-	"unicode"
 )
 
 func ValidUser(user *types.RegisterCredentials) error {
@@ -47,24 +47,10 @@ func ValidPassword(password, confirmPassword string) error {
 
 	var hasNumber, hasSpecial, hasUpper, hasLower bool
 
-	for _, code := range password {
-		if !hasNumber && unicode.IsNumber(code) {
-			hasNumber = true
-			continue
-		}
-		if !hasUpper && unicode.IsUpper(code) {
-			hasUpper = true
-			continue
-		}
-		if !hasLower && unicode.IsLower(code) {
-			hasLower = true
-			continue
-		}
-		if !hasSpecial && (unicode.IsPunct(code) || unicode.IsSymbol(code)) {
-			hasSpecial = true
-			continue
-		}
-	}
+	hasUpper = regexp.MustCompile(`[A-Z]`).MatchString(password)
+	hasLower = regexp.MustCompile(`[a-z]`).MatchString(password)
+	hasNumber = regexp.MustCompile(`\d`).MatchString(password)
+	hasSpecial = regexp.MustCompile(`[@$!%*?&#]`).MatchString(password)
 
 	validations := map[bool]string{
 		!hasUpper:   "a senha deve conter pelo menos uma letra maiúscula",
