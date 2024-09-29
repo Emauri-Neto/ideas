@@ -37,6 +37,11 @@ func SignIn(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
+		if err := ValidEmail(user.Email); err != nil {
+			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
 		u, _u := db.GetUserByEmail(user.Email)
 
 		if _u != nil {
@@ -73,15 +78,15 @@ func SignUp(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
+		if err := ValidUser(user); err != nil {
+			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
 		_, _u := db.GetUserByEmail(user.Email)
 
 		if _u == nil {
 			utils.WriteResponse(w, http.StatusConflict, "Email já está em uso.")
-			return
-		}
-
-		if user.Password != user.ConfirmPassword {
-			utils.WriteResponse(w, http.StatusConflict, "As senhas não coincidem.")
 			return
 		}
 
