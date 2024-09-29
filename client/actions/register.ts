@@ -2,6 +2,7 @@
 
 import * as z from 'zod';
 import { registerSchema } from '@/config/schemas';
+import { redirect } from 'next/navigation';
 
 export const register = async (values: z.infer<typeof registerSchema>) => {
     const fields = registerSchema.safeParse(values);
@@ -10,23 +11,18 @@ export const register = async (values: z.infer<typeof registerSchema>) => {
         return { error: 'Campos inválidos.' };
     }
 
-    const { email, confirmPassword, name, password } = fields.data;
-
     const res = await fetch('http://localhost:4367/auth/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            email,
-            name,
-            password,
-            confirmPassword
-        })
+        body: JSON.stringify(fields.data)
     });
 
     if (!res.ok) {
         const errorData = await res.json();
         return { error: errorData.message || 'Erro ao registrar.' };
     }
+
+    return redirect('/sign-in');
 };
