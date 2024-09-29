@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
-import ThemeToggler from '@/components/themeToggler';
+import ThemeToggler from '@/components/theme-toggler';
 import NavItems from '@/components/nav/navItems';
-import { LoginButton } from '../auth/authBtn';
+import { LoginButton } from '@/components/auth/auth-button';
 
 const Navbar = () => {
     return (
