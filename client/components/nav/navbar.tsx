@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import ThemeToggler from '@/components/themeToggler';
 import NavItems from '@/components/nav/navItems';
+import { LoginButton } from '../auth/authBtn';
 
 const Navbar = () => {
     return (
@@ -34,9 +35,9 @@ const Navbar = () => {
                                 )}
 
                                 {false ? null : (
-                                    <Link href='/sign-in' className={buttonVariants({ variant: 'ghost' })}>
-                                        Entrar
-                                    </Link>
+                                    <LoginButton>
+                                        <Button variant='ghost'>Entrar</Button>
+                                    </LoginButton>
                                 )}
 
                                 {false ? null : <span className='h-6 w-px bg-gray-200' aria-hidden='true' />}

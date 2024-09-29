@@ -15,7 +15,7 @@ const Footer = () => {
                     </div>
 
                     <div className='mt-4 flex items-center justify-center md:mt-0'>
-                        <div className='flex space-x-8'>
+                        <div className='flex flex-col md:flex-row'>
                             <Link href='/' className={cn(buttonVariants({ variant: 'link', className: 'text-sm text-muted-foreground' }))}>
                                 Termos de uso
                             </Link>
