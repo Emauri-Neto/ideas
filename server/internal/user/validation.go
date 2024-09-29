@@ -6,8 +6,6 @@ import (
 	"net/mail"
 	"strings"
 	"unicode"
-
-	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 
 func ValidUser(user *types.RegisterCredentials) error {
@@ -50,19 +48,19 @@ func ValidPassword(password, confirmPassword string) error {
 	var hasNumber, hasSpecial, hasUpper, hasLower bool
 
 	for _, code := range password {
-		if unicode.IsNumber(code) && !hasNumber {
+		if !hasNumber && unicode.IsNumber(code) {
 			hasNumber = true
 			continue
 		}
-		if unicode.IsUpper(code) && !hasUpper {
+		if !hasUpper && unicode.IsUpper(code) {
 			hasUpper = true
 			continue
 		}
-		if unicode.IsLower(code) && !hasLower {
+		if !hasLower && unicode.IsLower(code) {
 			hasLower = true
 			continue
 		}
-		if (unicode.IsPunct(code) || unicode.IsSymbol(code)) && !hasSpecial {
+		if !hasSpecial && (unicode.IsPunct(code) || unicode.IsSymbol(code)) {
 			hasSpecial = true
 			continue
 		}
@@ -79,10 +77,6 @@ func ValidPassword(password, confirmPassword string) error {
 		if condition {
 			return errors.New(message)
 		}
-	}
-
-	if err := passwordvalidator.Validate(password, 32); err != nil {
-		return err
 	}
 
 	return nil
