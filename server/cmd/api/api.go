@@ -36,7 +36,7 @@ func (s *WebServer) Run() error {
 	subrouter.HandleFunc("/study", study.CreateStudy(s.db)).Methods("POST")
 	subrouter.HandleFunc("/study/{id}/thread", study.CreateThread(s.db)).Methods("POST")
 
-	subrouter.Use(secure.GetUserFromTokenMiddleware)
+	subrouter.Use(secure.IsAuthenticated)
 
 	fmt.Printf("Servidor aqui -> %s 🔥", s.addr)
 	return http.ListenAndServe(s.addr, router)

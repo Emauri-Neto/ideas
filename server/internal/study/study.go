@@ -21,9 +21,7 @@ func CreateStudy(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		var idKey types.UserKey = "userId"
-
-		userId := r.Context().Value(idKey).(string)
+		userId := r.Context().Value("UserID").(string)
 
 		_c := db.CreateStudy(types.Study{
 			Id:             uuid.New().String(),

@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"fmt"
-	"ideas/types"
 	"ideas/utils"
 	"net/http"
 	"strings"
@@ -44,88 +43,56 @@ func SignToken(secret []byte, userId string) (string, error) {
 	return t, nil
 }
 
-func GetToken(tokenStr string) (*jwt.Token, error) {
+func Authorize(token string) (string, error) {
 	secret, _secret := utils.GetEnv("JWT_SECRET")
 
 	if _secret != nil {
-		return nil, fmt.Errorf("%s", _secret)
+		return "", fmt.Errorf("%s", _secret)
 	}
 
-	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("método de assinatura inesperado: %v", t.Header["alg"])
-		}
+	tkn, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
 	})
 
-	if err != nil {
-		return nil, fmt.Errorf("%w", err)
+	if tkn != nil && tkn.Valid {
+		if claims, ok := tkn.Claims.(jwt.MapClaims); ok && tkn.Valid {
+			sub := claims["sub"].(string)
+			
+			return sub, nil
+		}
 	}
 
-	return token, nil
-}
-
-func Authorize(token *jwt.Token) (bool, error) {
-
-	if token.Valid {
-		return true, nil
-	}
-
-	var err error
 	if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-			return false, fmt.Errorf("token malformado")
+			return "", fmt.Errorf("token malformado")
 		}
 		if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
-			return false, fmt.Errorf("token expirado")
+			return "", fmt.Errorf("token expirado")
 		}
 	}
 
-	return false, fmt.Errorf("nao foi possivel processar o token")
+	return "", fmt.Errorf("nao foi possivel processar o token")
 }
 
-func GetUserFromToken(tokenStr string) (string, error) {
-
-	var token *jwt.Token
-	token, err := GetToken(tokenStr)
-
-	if err != nil {
-		return "", err
-	}
-
-	if _, err := Authorize(token); err != nil {
-		return "", err
-	}
-
-	claims := token.Claims.(jwt.MapClaims)
-	value := claims["sub"]
-
-	if subValue, ok := value.(string); ok {
-		return subValue, nil
-	}
-
-	return "", fmt.Errorf("o valor da chave 'sub' não é uma string")
-}
-
-func GetUserFromTokenMiddleware(next http.Handler) http.Handler {
+func IsAuthenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token, err := GetTokenFromRequest(r)
+		token := r.Header.Get("Authorization")
+		
+		if token == "" || !strings.HasPrefix(token, "Bearer ") {
+			utils.WriteResponse(w, http.StatusUnauthorized, "Token inválido")
+			return
+		}
+
+		token = strings.TrimPrefix(token, "Bearer ")
+
+		id, err := Authorize(token)
+
 		if err != nil {
 			utils.WriteResponse(w, http.StatusUnauthorized, err.Error())
 			return
 		}
 
-		var userId string
-		userId, err = GetUserFromToken(token)
-		if err != nil {
-			utils.WriteResponse(w, http.StatusUnauthorized, err.Error())
-			return
-		}
-
-		var idKey types.UserKey = "userId"
-
-		ctx := context.WithValue(r.Context(), idKey, userId)
-		r = r.WithContext(ctx)
+		r = r.WithContext(context.WithValue(r.Context(), "UserID", id))
 
 		next.ServeHTTP(w, r)
 	})
