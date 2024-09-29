@@ -78,7 +78,7 @@ func SignUp(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		if err := ValidUser(user); err != nil {
+		if err := ValidUser(&user); err != nil {
 			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}

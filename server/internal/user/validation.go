@@ -4,12 +4,20 @@ import (
 	"errors"
 	"ideas/types"
 	"net/mail"
+	"strings"
 	"unicode"
 
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 
-func ValidUser(user types.RegisterCredentials) error {
+func ValidUser(user *types.RegisterCredentials) error {
+
+	name, err := ValidName(user.Name)
+	if err != nil {
+		return err
+	}
+	user.Name = name
+
 	if err := ValidEmail(user.Email); err != nil {
 		return err
 	}
@@ -78,4 +86,22 @@ func ValidPassword(password, confirmPassword string) error {
 	}
 
 	return nil
+}
+
+func ValidName(name string) (string, error) {
+	bitName := strings.Fields(name)
+
+	if len(bitName) == 0 {
+		return "", errors.New("nome não informado")
+	}
+
+	for _, subName := range bitName {
+		if len(subName) < 2 {
+			return "", errors.New("nome inválido")
+		}
+	}
+
+	name = strings.Join(bitName, " ")
+
+	return name, nil
 }
