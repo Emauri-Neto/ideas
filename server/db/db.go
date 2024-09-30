@@ -19,9 +19,12 @@ type queries interface {
 	GetUsers() string
 	GetUserByEmail() string
 	CreateUser() string
+	UpdateUser() string
 	CreateStudy() string
 	IsStudyOwner() string
 	CreateThread() string
+	DeleteUser() string
+	GetUserById() string
 }
 
 type Database struct {
@@ -39,6 +42,16 @@ func (db *Database) GetUsers() ([]types.User, error) {
 	return users, nil
 }
 
+func (db *Database) GetUsersById(id string) (types.User, error) {
+	var users types.User
+
+	if err := db.sqlx.Get(&users, db.query.GetUserById(), id); err != nil {
+		return users, err
+	}
+
+	return users, nil
+}
+
 func (db *Database) GetUserByEmail(email string) (types.User, error) {
 	var user types.User
 
@@ -51,6 +64,18 @@ func (db *Database) GetUserByEmail(email string) (types.User, error) {
 
 func (db *Database) CreateAccount(u types.User) error {
 	_, err := db.sqlx.Exec(db.query.CreateUser(), u.Id, u.Email, u.Password, u.Name)
+
+	return err
+}
+
+func (db *Database) UpdateUser(u types.User) error {
+	_, err := db.sqlx.Exec(db.query.UpdateUser(), u.Id, u.Name)
+
+	return err
+}
+
+func (db *Database) DeleteUser(id string) error {
+	_, err := db.sqlx.Exec(db.query.DeleteUser(), id)
 
 	return err
 }

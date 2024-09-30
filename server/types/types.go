@@ -26,6 +26,11 @@ type RegisterCredentials struct {
 	Name            string
 }
 
+type UpdateUser struct {
+	Id   string
+	Name string
+}
+
 type Study struct {
 	Id                 string    `json:"id" db:"id"`
 	Name               string    `json:"name" db:"name"`
