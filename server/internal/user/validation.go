@@ -27,6 +27,39 @@ func ValidUser(user *types.RegisterCredentials) error {
 	return nil
 }
 
+func ValidUserUpdate(user *types.RegisterCredentials) error {
+	var isChanged = false
+
+	if user.Name != "" {
+		name, err := ValidName(user.Name)
+		if err != nil {
+			return err
+		}
+		user.Name = name
+		isChanged = true
+	}
+
+	if user.Email != "" {
+		if err := ValidEmail(user.Email); err != nil {
+			return err
+		}
+		isChanged = true
+	}
+
+	if user.Password != "" {
+		if err := ValidPassword(user.Password, user.ConfirmPassword); err != nil {
+			return err
+		}
+		isChanged = true
+	}
+
+	if !isChanged {
+		return errors.New("nenhum valor foi enviado")
+	}
+
+	return nil
+}
+
 func ValidEmail(email string) error {
 	if _, err := mail.ParseAddress(email); err != nil {
 		return err

@@ -7,6 +7,7 @@ import (
 	"ideas/db/pg"
 	"ideas/types"
 	"ideas/utils"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -19,9 +20,12 @@ type queries interface {
 	GetUsers() string
 	GetUserByEmail() string
 	CreateUser() string
+	UpdateUser() string
 	CreateStudy() string
 	IsStudyOwner() string
 	CreateThread() string
+	DeleteUser() string
+	GetUserById() string
 }
 
 type Database struct {
@@ -39,6 +43,16 @@ func (db *Database) GetUsers() ([]types.User, error) {
 	return users, nil
 }
 
+func (db *Database) GetUsersById(id string) (types.User, error) {
+	var users types.User
+
+	if err := db.sqlx.Get(&users, db.query.GetUserById(), id); err != nil {
+		return users, err
+	}
+
+	return users, nil
+}
+
 func (db *Database) GetUserByEmail(email string) (types.User, error) {
 	var user types.User
 
@@ -51,6 +65,46 @@ func (db *Database) GetUserByEmail(email string) (types.User, error) {
 
 func (db *Database) CreateAccount(u types.User) error {
 	_, err := db.sqlx.Exec(db.query.CreateUser(), u.Id, u.Email, u.Password, u.Name)
+
+	return err
+}
+
+func (db *Database) UpdateUser(u types.User) error {
+	updateQuery := db.query.UpdateUser()
+
+	var setQuery []string
+	var values []interface{}
+	var position = 2
+
+	values = append(values, u.Id)
+
+	if u.Name != "" {
+		setQuery = append(setQuery, fmt.Sprintf("name = $%d", position))
+		values = append(values, u.Name)
+		position++
+	}
+
+	if u.Email != "" {
+		setQuery = append(setQuery, fmt.Sprintf("email = $%d", position))
+		values = append(values, u.Email)
+		position++
+	}
+
+	if u.Password != "" {
+		setQuery = append(setQuery, fmt.Sprintf("password = $%d", position))
+		values = append(values, u.Password)
+		position++
+	}
+
+	updateQuery = fmt.Sprintf(updateQuery, strings.Join(setQuery, ", "))
+
+	_, err := db.sqlx.Exec(updateQuery, values...)
+
+	return err
+}
+
+func (db *Database) DeleteUser(id string) error {
+	_, err := db.sqlx.Exec(db.query.DeleteUser(), id)
 
 	return err
 }

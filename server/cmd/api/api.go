@@ -32,6 +32,9 @@ func (s *WebServer) Run() error {
 	auth.HandleFunc("/login", user.SignIn(s.db)).Methods("POST")
 
 	subrouter.HandleFunc("/users", user.List(s.db)).Methods("GET")
+	subrouter.HandleFunc("/users/{id}", user.GetById(s.db)).Methods("GET")
+	subrouter.HandleFunc("/user/update", user.UpdateUser(s.db)).Methods("POST")
+	subrouter.HandleFunc("/user/delete", user.DeleteUser(s.db)).Methods("DELETE")
 
 	subrouter.HandleFunc("/study", study.CreateStudy(s.db)).Methods("POST")
 	subrouter.HandleFunc("/study/{id}/thread", study.CreateThread(s.db)).Methods("POST")
