@@ -7,7 +7,6 @@ import (
 	"ideas/db/pg"
 	"ideas/types"
 	"ideas/utils"
-	"strings"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -70,35 +69,7 @@ func (db *Database) CreateAccount(u types.User) error {
 }
 
 func (db *Database) UpdateUser(u types.User) error {
-	updateQuery := db.query.UpdateUser()
-
-	var setQuery []string
-	var values []interface{}
-	var position = 2
-
-	values = append(values, u.Id)
-
-	if u.Name != "" {
-		setQuery = append(setQuery, fmt.Sprintf("name = $%d", position))
-		values = append(values, u.Name)
-		position++
-	}
-
-	if u.Email != "" {
-		setQuery = append(setQuery, fmt.Sprintf("email = $%d", position))
-		values = append(values, u.Email)
-		position++
-	}
-
-	if u.Password != "" {
-		setQuery = append(setQuery, fmt.Sprintf("password = $%d", position))
-		values = append(values, u.Password)
-		position++
-	}
-
-	updateQuery = fmt.Sprintf(updateQuery, strings.Join(setQuery, ", "))
-
-	_, err := db.sqlx.Exec(updateQuery, values...)
+	_, err := db.sqlx.Exec(db.query.UpdateUser(), u.Id, u.Name)
 
 	return err
 }

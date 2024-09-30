@@ -9,7 +9,6 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 )
 
 func List(db *db.Database) func(http.ResponseWriter, *http.Request) {
@@ -29,12 +28,11 @@ func List(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-func GetById(db *db.Database) func(http.ResponseWriter, *http.Request) {
+func GetUser(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 
-		vars := mux.Vars(r)
-		userId := vars["id"]
+		userId := r.Context().Value("UserID").(string)
 
 		u, _u := db.GetUsersById(userId)
 
@@ -136,7 +134,7 @@ func SignUp(db *db.Database) func(http.ResponseWriter, *http.Request) {
 
 func UpdateUser(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var user types.RegisterCredentials
+		var user types.UpdateUser
 
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
@@ -148,34 +146,11 @@ func UpdateUser(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		if user.Email != "" {
-			_, _u := db.GetUserByEmail(user.Email)
-
-			if _u == nil {
-				utils.WriteResponse(w, http.StatusConflict, "Email já está em uso.")
-				return
-			}
-		}
-
-		var hash string
-
-		if user.Password != "" {
-			var _hash error
-			hash, _hash = secure.HashValue(user.Password)
-
-			if _hash != nil {
-				utils.WriteResponse(w, http.StatusInternalServerError, _hash.Error())
-				return
-			}
-		}
-
 		userId := r.Context().Value("UserID").(string)
 
 		_c := db.UpdateUser(types.User{
-			Id:       userId,
-			Name:     user.Name,
-			Email:    user.Email,
-			Password: hash,
+			Id:   userId,
+			Name: user.Name,
 		})
 
 		if _c != nil {

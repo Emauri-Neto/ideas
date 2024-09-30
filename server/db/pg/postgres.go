@@ -38,7 +38,7 @@ func (d Driver) CreateUser() string {
 
 func (d Driver) UpdateUser() string {
 	return `
-		UPDATE users SET %s WHERE id = $1
+		UPDATE users SET name = $2 WHERE id = $1
 	`
 }
 
