@@ -78,3 +78,36 @@ func createDiscussionThreadTable() string {
 		)
 	`
 }
+
+func createInvitationTable() string {
+	return `
+		CREATE TABLE invitation (
+			id UUID PRIMARY KEY,
+			text TEXT,
+			type TEXT,
+			accept BOOLEAN,
+			study_id UUID NOT NULL,
+			thread_id UUID NOT NULL,
+			created_at TIMESTAMPTZ DEFAULT (CURRENT_TIMESTAMP - INTERVAL '3 hours'),
+
+			CONSTRAINT fk_study FOREIGN KEY (study_id) REFERENCES study (id) ON DELETE CASCADE,
+			CONSTRAINT fk_thread FOREIGN KEY (thread_id) REFERENCES discussion_thread (id) ON DELETE CASCADE
+		)
+	`
+}
+
+func createUsersInvitationTable() string {
+	return `
+		CREATE TABLE users_invitation (
+			id UUID PRIMARY KEY,
+
+			invitation_id UUID NOT NULL,
+			sender_id UUID NOT NULL,
+			receiver_id UUID NOT NULL,
+
+			CONSTRAINT fk_sender FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
+			CONSTRAINT fk_receiver FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE,
+			CONSTRAINT fk_invitation FOREIGN KEY (invitation_id) REFERENCES invitation (id) ON DELETE CASCADE
+		)
+	`
+}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"ideas/db"
 	secure "ideas/internal/auth"
+	"ideas/internal/invitation"
 	"ideas/internal/study"
 	"ideas/internal/user"
 	"net/http"
@@ -37,6 +38,8 @@ func (s *WebServer) Run() error {
 
 	subrouter.HandleFunc("/study", study.CreateStudy(s.db)).Methods("POST")
 	subrouter.HandleFunc("/study/{id}/thread", study.CreateThread(s.db)).Methods("POST")
+
+	subrouter.HandleFunc("/thread/{id}/invite", invitation.CreateInvitation(s.db)).Methods("POST")
 
 	subrouter.Use(secure.IsAuthenticated)
 

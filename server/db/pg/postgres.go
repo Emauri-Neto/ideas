@@ -9,6 +9,8 @@ func (d Driver) Schema() []string {
 		createWorkspace(),
 		createStudyTable(),
 		createDiscussionThreadTable(),
+		createInvitationTable(),
+		createUsersInvitationTable(),
 	}
 }
 
@@ -63,5 +65,42 @@ func (d Driver) IsStudyOwner() string {
 func (d Driver) CreateThread() string {
 	return `
 		INSERT INTO discussion_thread(id, name, study_id, responsible_id) VALUES ($1, $2, $3, $4)
+	`
+}
+
+func (d Driver) IsThreadResponsibleUnion() string {
+	return `
+		SELECT 1 FROM discussion_thread WHERE id = $1 AND responsible_id = $2
+		UNION
+		SELECT 1 FROM study WHERE id = $3 AND responsible_id = $2
+	`
+}
+
+func (d Driver) GetThreadById() string {
+	return `
+		SELECT id, name, study_id FROM discussion_thread WHERE id = $1
+	`
+}
+
+func (d Driver) CreateInvitationWith() string {
+	return `
+		WITH ins_invitation AS (
+    		INSERT INTO invitation(id, type, text, study_id, thread_id)
+    		VALUES ($1, $2, $3, $4, $5)
+    		RETURNING id
+		)
+		INSERT INTO users_invitation(id, invitation_id, sender_id, receiver_id)
+		VALUES ($6, (SELECT id FROM ins_invitation), $7, $8);
+	`
+}
+
+func (d Driver) ExistInvitation() string {
+	return `
+		SELECT 1 
+		FROM users_invitation ui
+		INNER JOIN invitation i ON ui.invitation_id = i.id
+		WHERE ui.receiver_id = $1
+		AND i.thread_id = $2
+		LIMIT 1
 	`
 }

@@ -52,9 +52,7 @@ func CreateThread(db *db.Database) func(http.ResponseWriter, *http.Request) {
 		vars := mux.Vars(r)
 		studyId := vars["id"]
 
-		var idKey types.UserKey = "userId"
-
-		userId := r.Context().Value(idKey).(string)
+		userId := r.Context().Value("UserID").(string)
 
 		err := db.IsStudyOwner(studyId, userId)
 		if err != nil {

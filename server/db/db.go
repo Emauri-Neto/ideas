@@ -25,6 +25,10 @@ type queries interface {
 	CreateThread() string
 	DeleteUser() string
 	GetUserById() string
+	GetThreadById() string
+	IsThreadResponsibleUnion() string
+	ExistInvitation() string
+	CreateInvitationWith() string
 }
 
 type Database struct {
@@ -105,6 +109,54 @@ func (db *Database) IsStudyOwner(id_study, id_user string) error {
 
 func (db *Database) CreateThread(t types.Thread) error {
 	_, err := db.sqlx.Exec(db.query.CreateThread(), t.Id, t.Name, t.Study_id, t.Responsible_id)
+
+	return err
+}
+
+func (db *Database) GetThreadById(id string) (types.Thread, error) {
+	var thread types.Thread
+
+	if err := db.sqlx.Get(&thread, db.query.GetThreadById(), id); err != nil {
+		return thread, err
+	}
+
+	return thread, nil
+}
+
+func (db *Database) ExistInvitation(thread_id, user_id string) error {
+	var exist int
+
+	if err := db.sqlx.Get(&exist, db.query.ExistInvitation(), user_id, thread_id); err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		} else {
+			return err
+		}
+	}
+
+	return errors.New("já existe convite para esse usuario")
+}
+
+func (db *Database) IsThreadResponsible(thread types.Thread, id_responsible string) error {
+
+	var exist int
+
+	if err := db.sqlx.Get(&exist, db.query.IsThreadResponsibleUnion(), thread.Id, id_responsible, thread.Study_id); err != nil {
+		if err == sql.ErrNoRows {
+			return errors.New("usuario não responsavel pela thread")
+		} else {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (db *Database) CreateInvitation(invitation types.Invitation, userInvitation types.UserInvitation) error {
+	_, err := db.sqlx.Exec(db.query.CreateInvitationWith(),
+		invitation.Id, invitation.Type_invitation,
+		invitation.Text, invitation.Study_id, invitation.Thread_id,
+		userInvitation.Id, userInvitation.Sender_id, userInvitation.Receiver_id)
 
 	return err
 }
