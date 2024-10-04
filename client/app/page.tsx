@@ -6,6 +6,9 @@ export default function Home() {
     return (
         <MaxWidthWrapper>
             <Navbar />
+            <div className='mt-5 relative mx-auto'>
+                <p>aaaaa</p>
+            </div>
             <Footer />
         </MaxWidthWrapper>
     );

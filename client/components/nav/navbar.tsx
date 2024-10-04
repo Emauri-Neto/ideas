@@ -3,6 +3,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import ThemeToggler from '@/components/theme-toggler';
 import NavItems from '@/components/nav/navItems';
 import { LoginButton } from '@/components/auth/auth-button';
+import SearchBar from './searchbar';
 
 const Navbar = () => {
     return (
@@ -15,10 +16,13 @@ const Navbar = () => {
                                 🚀 Ideas
                             </Link>
                         </div>
-
                         <div className='hidden z-50 lg:ml-8 lg:block lg:self-center bg-background'>
                             <NavItems />
                         </div>
+
+                        {/* <div className='mx-2'>
+                            <SearchBar />
+                        </div> */}
 
                         <div className='ml-auto flex items-center'>
                             <div className='hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6'>
