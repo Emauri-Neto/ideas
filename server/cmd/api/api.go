@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"ideas/db"
 	secure "ideas/internal/auth"
+	"ideas/internal/invitation"
 	"ideas/internal/study"
 	"ideas/internal/thread"
 	"ideas/internal/user"
@@ -35,6 +36,10 @@ func (s *WebServer) Run() error {
 	subrouter.HandleFunc("/user", user.GetUser(s.db)).Methods("GET")
 	subrouter.HandleFunc("/user/update", user.UpdateUser(s.db)).Methods("PUT")
 	subrouter.HandleFunc("/user/delete", user.DeleteUser(s.db)).Methods("DELETE")
+	subrouter.HandleFunc("/user/invitations", invitation.ListInvitations(s.db)).Methods("GET")
+
+	subrouter.HandleFunc("/invitation/{id}/accept", invitation.AcceptInvite(s.db)).Methods("GET")
+	subrouter.HandleFunc("/invitation/{id}/refuse", invitation.RefuseInvite(s.db)).Methods("GET")
 
 	subrouter.HandleFunc("/study", study.CreateStudy(s.db)).Methods("POST")
 
@@ -46,8 +51,11 @@ func (s *WebServer) Run() error {
 	subrouter.HandleFunc("/study/{id}/thread", thread.CreateThread(s.db)).Methods("POST")
 
 	subrouter.HandleFunc("/study/{id}/users", study.ListUsersStudy(s.db)).Methods("GET")
-	subrouter.HandleFunc("/study/{id}/thread", study.CreateThread(s.db)).Methods("POST")
+	subrouter.HandleFunc("/study/{id}/thread", thread.CreateThread(s.db)).Methods("POST")
 
+	subrouter.HandleFunc("/thread/{id}/invite", invitation.CreateInvitation(s.db)).Methods("POST")
+
+	subrouter.HandleFunc("/thread/{id}/users", study.ListUsersThread(s.db)).Methods("GET")
 
 	subrouter.HandleFunc("/thread/{id}/users", study.ListUsersThread(s.db)).Methods("GET")
 

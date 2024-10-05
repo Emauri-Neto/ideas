@@ -8,6 +8,7 @@ import (
 	"ideas/types"
 	"ideas/utils"
 
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
@@ -30,10 +31,17 @@ type queries interface {
 	UpdateStudy() string
 	CreateThread() string
 
-	DeleteUser() string
-	GetUserById() string
 	GetUsersByStudy() string
 	GetUsersByThread() string
+	GetThreadById() string
+	IsThreadResponsibleUnion() string
+	ExistInvitationAndUser() string
+	CreateInvitationWith() string
+	GetResponsibleAndStudyId() string
+	GetInvitationsByReceiver() string
+	GetInvitationOwner() string
+	AcceptRefuseInvitation() string
+	CreateMiddleTableUser() string
 }
 
 type Database struct {
@@ -175,6 +183,101 @@ func (db Database) GetUsersByThread(thread_id string) ([]types.UserResponse, err
 	}
 
 	return users, nil
+}
+
+func (db *Database) GetThreadById(id string) (types.Thread, error) {
+	var thread types.Thread
+
+	if err := db.sqlx.Get(&thread, db.query.GetThreadById(), id); err != nil {
+		return thread, err
+	}
+
+	return thread, nil
+}
+
+func (db *Database) GetResponsibleAndStudyId(thread_id string) (types.Responsibles, error) {
+	var responsibles types.Responsibles
+
+	if err := db.sqlx.Get(&responsibles, db.query.GetResponsibleAndStudyId(), thread_id); err != nil {
+		if err == sql.ErrNoRows {
+			return responsibles, errors.New("não foi encontrado a thread")
+		}
+		return responsibles, err
+	}
+
+	return responsibles, nil
+}
+
+func (db *Database) ExistInvitationAndUser(thread_id, user_id string) error {
+	var exist sql.NullBool
+
+	if err := db.sqlx.Get(&exist, db.query.ExistInvitationAndUser(), user_id, thread_id); err != nil {
+		return err
+	}
+
+	if exist.Valid {
+		if exist.Bool {
+			return errors.New("já existe convite para esse usuario")
+		} else {
+			return nil
+		}
+	}
+
+	return errors.New("esse usuario não existe")
+}
+
+func (db *Database) GetInvitationsByReceiver(userReceiver string) ([]types.Invitation, error) {
+	var invitations []types.Invitation
+
+	if err := db.sqlx.Select(&invitations, db.query.GetInvitationsByReceiver(), userReceiver); err != nil {
+		return nil, err
+	}
+
+	return invitations, nil
+}
+
+func (db *Database) CreateInvitation(invitation types.Invitation, userInvitation types.UserInvitation) error {
+	_, err := db.sqlx.Exec(db.query.CreateInvitationWith(),
+		invitation.Id, invitation.Type_invitation,
+		invitation.Text, invitation.Study_id, invitation.Thread_id,
+		userInvitation.Id, userInvitation.Sender_id, userInvitation.Receiver_id)
+
+	return err
+}
+
+func (db *Database) GetInvitationOwner(invitation_id, user_id string) (types.Invitation, error) {
+	var invitation types.Invitation
+
+	if err := db.sqlx.Get(&invitation, db.query.GetInvitationOwner(), invitation_id, user_id); err != nil {
+		if err == sql.ErrNoRows {
+			return invitation, errors.New("esse usuario não é dono desse convite ou convite não existe")
+		}
+		return invitation, err
+	}
+
+	return invitation, nil
+}
+
+func (db *Database) AcceptRefuseInvite(invitation_id string, accept bool) error {
+	_, err := db.sqlx.Exec(db.query.AcceptRefuseInvitation(), accept, invitation_id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *Database) CreateMiddleTableUser(user_id string, invite types.Invitation) error {
+	_, err := db.sqlx.Exec(db.query.CreateMiddleTableUser(),
+		uuid.New().String(), user_id, invite.Study_id,
+		uuid.New().String(), invite.Thread_id, invite.Type_invitation)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func MountDB() (*Database, error) {
