@@ -16,15 +16,22 @@ type queries interface {
 	Schema() []string
 	SaveMigration() string
 	GetIndexLastMigration() string
+	//USER
 	GetUsers() string
 	GetUserByEmail() string
 	CreateUser() string
 	UpdateUser() string
-	CreateStudy() string
-	IsStudyOwner() string
-	CreateThread() string
 	DeleteUser() string
 	GetUserById() string
+	//STUDY
+	CreateStudy() string
+	GetAllStudy() string
+	GetStudyById() string
+	IsStudyOwner() string
+	DeleteStudy() string
+	UpdateStudy() string
+	//THREAD
+	CreateThread() string
 }
 
 type Database struct {
@@ -86,6 +93,25 @@ func (db *Database) CreateStudy(s types.Study) error {
 	return err
 }
 
+func (db *Database) GetStudyById(id string) (types.Study, error) {
+	var study types.Study
+
+	if err := db.sqlx.Get(&study, db.query.GetStudyById(), id); err != nil {
+		return study, err
+	}
+	return study, nil
+}
+
+func (db *Database) GetAllStudy() ([]types.Study, error) {
+	var studies []types.Study
+
+	if err := db.sqlx.Select(&studies, db.query.GetAllStudy()); err != nil {
+		return nil, err
+	}
+
+	return studies, nil
+}
+
 func (db *Database) IsStudyOwner(id_study, id_user string) error {
 	var exists int
 
@@ -101,6 +127,18 @@ func (db *Database) IsStudyOwner(id_study, id_user string) error {
 	}
 
 	return nil
+}
+
+func (db *Database) DeleteStudy(id string) error {
+	_, err := db.sqlx.Exec(db.query.DeleteStudy(), id)
+
+	return err
+}
+
+func (db *Database) UpdateStudy(s types.Study) error {
+	_, err := db.sqlx.Exec(db.query.UpdateStudy(), s.Name, s.Objective, s.Methodology, s.Max_participants, s.Participation_type, s.Id)
+
+	return err
 }
 
 func (db *Database) CreateThread(t types.Thread) error {

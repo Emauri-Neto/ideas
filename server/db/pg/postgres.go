@@ -48,9 +48,23 @@ func (d Driver) DeleteUser() string {
 	`
 }
 
+// STUDY
+
 func (d Driver) CreateStudy() string {
 	return `
 		INSERT INTO study(id, name, responsible_id) VALUES ($1, $2, $3)
+	`
+}
+
+func (d Driver) GetAllStudy() string {
+	return `
+		SELECT * FROM study
+	`
+}
+
+func (d Driver) GetStudyById() string {
+	return `
+		SELECT * FROM study WHERE id =  $1 
 	`
 }
 
@@ -59,6 +73,26 @@ func (d Driver) IsStudyOwner() string {
 		SELECT 1 FROM study WHERE id = $1 AND responsible_id = $2
 	`
 }
+
+func (d Driver) DeleteStudy() string {
+	return `
+		DELETE FROM study WHERE id = $1
+	`
+}
+
+func (d Driver) UpdateStudy() string {
+	return `
+		UPDATE study SET
+		name = $1,
+		objective = $2,
+		methodology = $3,
+		max_participants = $4,
+		participation_type = $5
+		WHERE id = $6
+	`
+}
+
+//THREAD
 
 func (d Driver) CreateThread() string {
 	return `
