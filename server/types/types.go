@@ -53,4 +53,10 @@ type Thread struct {
 	Study_id            string    `json:"study_id" db:"study_id"`
 }
 
+type UserResponse struct {
+	Id    string `json:"id" db:"id"`
+	Name  string `json:"name" db:"name"`
+	Email string `json:"email" db:"email"`
+}
+
 type UserKey string

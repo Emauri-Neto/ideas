@@ -95,3 +95,21 @@ func (d Driver) CreateThread() string {
 		INSERT INTO discussion_thread(id, name, study_id, responsible_id) VALUES ($1, $2, $3, $4)
 	`
 }
+
+func (d Driver) GetUsersByStudy() string {
+	return `
+        SELECT u.id, u.name, u.email FROM users_study us
+        JOIN users u
+        ON us.user_id = u.id
+        WHERE study_id =  $1;
+    `
+}
+
+func (d Driver) GetUsersByThread() string {
+	return `
+        SELECT u.id, u.name, u.email FROM users_thread ut
+        JOIN users u
+        ON u.id = ut.user_id
+        WHERE thread_id = $1
+    `
+}

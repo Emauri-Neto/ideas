@@ -29,6 +29,11 @@ type queries interface {
 	DeleteStudy() string
 	UpdateStudy() string
 	CreateThread() string
+
+	DeleteUser() string
+	GetUserById() string
+	GetUsersByStudy() string
+	GetUsersByThread() string
 }
 
 type Database struct {
@@ -142,6 +147,34 @@ func (db *Database) CreateThread(t types.Thread) error {
 	_, err := db.sqlx.Exec(db.query.CreateThread(), t.Id, t.Name, t.Study_id, t.Responsible_id)
 
 	return err
+}
+
+func (db Database) GetUsersByStudy(study_id string) ([]types.UserResponse, error) {
+	var users []types.UserResponse
+
+	if err := db.sqlx.Select(&users, db.query.GetUsersByStudy(), study_id); err != nil {
+		return users, err
+	}
+
+	if users == nil {
+		return users, errors.New("nada encontrado")
+	}
+
+	return users, nil
+}
+
+func (db Database) GetUsersByThread(thread_id string) ([]types.UserResponse, error) {
+	var users []types.UserResponse
+
+	if err := db.sqlx.Select(&users, db.query.GetUsersByThread(), thread_id); err != nil {
+		return users, err
+	}
+
+	if users == nil {
+		return users, errors.New("nada encontrado")
+	}
+
+	return users, nil
 }
 
 func MountDB() (*Database, error) {
