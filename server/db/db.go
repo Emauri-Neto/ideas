@@ -35,6 +35,8 @@ type queries interface {
 	GetInvitationOwner() string
 	AcceptRefuseInvitation() string
 	CreateMiddleTableUser() string
+	GetUsersByStudy() string
+	GetUsersByThread() string
 }
 
 type Database struct {
@@ -212,6 +214,34 @@ func (db *Database) CreateMiddleTableUser(user_id string, invite types.Invitatio
 	}
 
 	return nil
+}
+
+func (db *Database) GetUsersByStudy(study_id string) ([]types.UserResponse, error) {
+	var users []types.UserResponse
+
+	if err := db.sqlx.Select(&users, db.query.GetUsersByStudy(), study_id); err != nil {
+		return users, err
+	}
+
+	if users == nil {
+		return users, errors.New("nada encontrado")
+	}
+
+	return users, nil
+}
+
+func (db *Database) GetUsersByThread(thread_id string) ([]types.UserResponse, error) {
+	var users []types.UserResponse
+
+	if err := db.sqlx.Select(&users, db.query.GetUsersByThread(), thread_id); err != nil {
+		return users, err
+	}
+
+	if users == nil {
+		return users, errors.New("nada encontrado")
+	}
+
+	return users, nil
 }
 
 func MountDB() (*Database, error) {

@@ -83,4 +83,10 @@ type Responsibles struct {
 	Thread_responsible string `db:"thread_responsible"`
 }
 
+type UserResponse struct {
+	Id    string `json:"id" db:"id"`
+	Name  string `json:"name" db:"name"`
+	Email string `json:"email" db:"email"`
+}
+
 type UserKey string
