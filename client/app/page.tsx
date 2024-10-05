@@ -5,7 +5,7 @@ import Navbar from '@/components/nav/navbar';
 import StudiesArea from '@/components/study/studiesArea';
 import MaxWidthWrapper from '@/components/wrapper';
 import { cn } from '@/lib/utils';
-import { Network, Popcorn } from 'lucide-react';
+import { Network, Popcorn, BookDashed } from 'lucide-react';
 import { useState } from 'react';
 
 const OPTS = [
@@ -20,6 +20,12 @@ const OPTS = [
         description: 'Mais famosos entre o público',
         value: 'popular',
         icon: Popcorn
+    },
+    {
+        title: 'Meus Estudos',
+        description: 'Ver estudos privados',
+        value: 'owner',
+        icon: BookDashed
     }
 ];
 
