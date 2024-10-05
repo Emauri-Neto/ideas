@@ -104,7 +104,7 @@ func AcceptInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		if err := db.AcceptInvite(inviationId); err != nil {
+		if err := db.AcceptRefuseInvite(inviationId, true); err != nil {
 			utils.WriteResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -132,7 +132,7 @@ func RefuseInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		if err := db.RefuseInvite(inviationId); err != nil {
+		if err := db.AcceptRefuseInvite(inviationId, false); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

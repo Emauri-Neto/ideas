@@ -192,18 +192,8 @@ func (db *Database) GetInvitationOwner(invitation_id, user_id string) (types.Inv
 	return invitation, nil
 }
 
-func (db *Database) AcceptInvite(invitation_id string) error {
-	_, err := db.sqlx.Exec(db.query.AcceptRefuseInvitation(), true, invitation_id)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (db *Database) RefuseInvite(invitation_id string) error {
-	_, err := db.sqlx.Exec(db.query.AcceptRefuseInvitation(), false, invitation_id)
+func (db *Database) AcceptRefuseInvite(invitation_id string, accept bool) error {
+	_, err := db.sqlx.Exec(db.query.AcceptRefuseInvitation(), accept, invitation_id)
 
 	if err != nil {
 		return err
