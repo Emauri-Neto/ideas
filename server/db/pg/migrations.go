@@ -111,3 +111,32 @@ func createUsersInvitationTable() string {
 		)
 	`
 }
+
+func createUsersStudyTable() string {
+	return `
+		CREATE TABLE users_study (
+			id UUID PRIMARY KEY,
+
+			user_id UUID NOT NULL,
+			study_id UUID NOT NULL,
+
+			CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+			CONSTRAINT fk_study FOREIGN KEY (study_id) REFERENCES study (id) ON DELETE CASCADE
+		)
+	`
+}
+
+func createUsersThreadTable() string {
+	return `
+		CREATE TABLE users_thread (
+			id UUID PRIMARY KEY,
+			role TEXT NOT NULL,
+
+			user_id UUID NOT NULL,
+			thread_id UUID NOT NULL,
+
+			CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+			CONSTRAINT fk_thread FOREIGN KEY (thread_id) REFERENCES discussion_thread (id) ON DELETE CASCADE
+		)	
+	`
+}

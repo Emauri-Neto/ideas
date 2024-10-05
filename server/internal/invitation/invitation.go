@@ -20,17 +20,10 @@ func CreateInvitation(db *db.Database) func(http.ResponseWriter, *http.Request) 
 			return
 		}
 
-		_, err := db.GetUsersById(invitationRequest.Receiver_id)
-
-		if err != nil {
-			utils.WriteResponse(w, http.StatusBadRequest, "receiver não existe")
-			return
-		}
-
 		vars := mux.Vars(r)
 		threadId := vars["id"]
 
-		thread, err := db.GetThreadById(threadId)
+		responsibles, err := db.GetResponsibleAndStudyId(threadId)
 
 		if err != nil {
 			utils.WriteResponse(w, http.StatusNotFound, err.Error())
@@ -39,15 +32,15 @@ func CreateInvitation(db *db.Database) func(http.ResponseWriter, *http.Request) 
 
 		userId := r.Context().Value("UserID").(string)
 
-		if err := db.IsThreadResponsible(thread, userId); err != nil {
-			utils.WriteResponse(w, http.StatusUnauthorized, err.Error())
+		if responsibles.Study_responsible != userId && responsibles.Thread_responsible != userId {
+			utils.WriteResponse(w, http.StatusUnauthorized, "usuario não autorizado")
 			return
 		}
 
 		receiverId := invitationRequest.Receiver_id
 
-		if err := db.ExistInvitation(thread.Id, receiverId); err != nil {
-			utils.WriteResponse(w, http.StatusConflict, err.Error())
+		if err := db.ExistInvitationAndUser(threadId, receiverId); err != nil {
+			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -56,7 +49,7 @@ func CreateInvitation(db *db.Database) func(http.ResponseWriter, *http.Request) 
 			Type_invitation: invitationRequest.Type_invitation,
 			Text:            invitationRequest.Text,
 			Thread_id:       threadId,
-			Study_id:        thread.Study_id,
+			Study_id:        responsibles.Study_id,
 		}
 
 		userInvitation := types.UserInvitation{
@@ -72,5 +65,78 @@ func CreateInvitation(db *db.Database) func(http.ResponseWriter, *http.Request) 
 		}
 
 		utils.WriteResponse(w, http.StatusOK, "Invitation criada com sucesso")
+	}
+}
+
+func ListInvitations(db *db.Database) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+
+		userId := r.Context().Value("UserID").(string)
+
+		u, _u := db.GetInvitationsByReceiver(userId)
+
+		if _u != nil {
+			utils.WriteResponse(w, http.StatusInternalServerError, _u.Error())
+			return
+		}
+
+		if err := json.NewEncoder(w).Encode(u); err != nil {
+			utils.WriteResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+	}
+}
+
+func AcceptInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+
+		vars := mux.Vars(r)
+		inviationId := vars["id"]
+
+		userId := r.Context().Value("UserID").(string)
+
+		invitation, err := db.GetInvitationOwner(inviationId, userId)
+
+		if err != nil {
+			utils.WriteResponse(w, http.StatusUnauthorized, err.Error())
+			return
+		}
+
+		if err := db.AcceptInvite(inviationId); err != nil {
+			utils.WriteResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		if err := db.CreateMiddleTableUser(userId, invitation); err != nil {
+			utils.WriteResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		utils.WriteResponse(w, http.StatusOK, "Convite aceito")
+	}
+}
+
+func RefuseInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+
+		vars := mux.Vars(r)
+		inviationId := vars["id"]
+
+		userId := r.Context().Value("UserID").(string)
+
+		if _, err := db.GetInvitationOwner(inviationId, userId); err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		if err := db.RefuseInvite(inviationId); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		utils.WriteResponse(w, http.StatusOK, "Convite recusado")
 	}
 }

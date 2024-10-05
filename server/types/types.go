@@ -1,6 +1,7 @@
 package types
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -54,13 +55,13 @@ type Thread struct {
 }
 
 type Invitation struct {
-	Id              string    `json:"id" db:"id"`
-	Type_invitation string    `json:"type" db:"type"`
-	Text            string    `json:"text" db:"text"`
-	Accept          bool      `json:"accept" db:"id"`
-	CreatedAt       time.Time `json:"created_at" db:"created_at"`
-	Study_id        string    `json:"study_id" db:"study_id"`
-	Thread_id       string    `json:"thread_id" db:"thread_id"`
+	Id              string       `json:"id" db:"id"`
+	Type_invitation string       `json:"type" db:"type"`
+	Text            string       `json:"text" db:"text"`
+	Accept          sql.NullBool `json:"accept" db:"accept"`
+	CreatedAt       time.Time    `json:"created_at" db:"created_at"`
+	Study_id        string       `json:"study_id" db:"study_id"`
+	Thread_id       string       `json:"thread_id" db:"thread_id"`
 }
 
 type RequestInvitation struct {
@@ -74,6 +75,12 @@ type UserInvitation struct {
 	Invitation_id string
 	Sender_id     string
 	Receiver_id   string
+}
+
+type Responsibles struct {
+	Study_id           string `db:"study_id"`
+	Study_responsible  string `db:"study_responsible"`
+	Thread_responsible string `db:"thread_responsible"`
 }
 
 type UserKey string
