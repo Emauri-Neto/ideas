@@ -28,7 +28,10 @@ const NavItems = () => {
                 {NAV.map(item => (
                     <Tooltip key={item.href}>
                         <TooltipTrigger asChild>
-                            <Link href={item.href} className={buttonVariants({ variant: path === item.href ? 'secondary' : 'ghost' })}>
+                            <Link
+                                href={item.href}
+                                className={buttonVariants({ variant: path === item.href ? 'secondary' : 'ghost', className: 'mx-1' })}
+                            >
                                 <item.icon className='w-5 h-5' />
                             </Link>
                         </TooltipTrigger>

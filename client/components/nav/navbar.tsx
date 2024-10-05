@@ -7,7 +7,7 @@ import SearchBar from './searchbar';
 
 const Navbar = () => {
     return (
-        <div className='sticky z-50 h-14 inset-x-0 top-0 w-full'>
+        <div className='sticky z-100 h-14 inset-x-0 top-0 w-full backdrop-blur-lg transition-all mb-8'>
             <header className='relative'>
                 <div className='border-b border-gray-200 dark:border-gray-300'>
                     <div className='flex h-16 items-center'>
