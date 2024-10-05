@@ -48,8 +48,6 @@ func (d Driver) DeleteUser() string {
 	`
 }
 
-// STUDY
-
 func (d Driver) CreateStudy() string {
 	return `
 		INSERT INTO study(id, name, responsible_id) VALUES ($1, $2, $3)
@@ -91,8 +89,6 @@ func (d Driver) UpdateStudy() string {
 		WHERE id = $6
 	`
 }
-
-//THREAD
 
 func (d Driver) CreateThread() string {
 	return `

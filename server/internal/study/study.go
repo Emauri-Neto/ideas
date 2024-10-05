@@ -6,7 +6,6 @@ import (
 	"ideas/db"
 	"ideas/types"
 	"ideas/utils"
-	"log"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -44,7 +43,7 @@ func GetAllStudies(db *db.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		studies, err := db.GetAllStudy()
 		if err != nil {
-			// Adicione log detalhado para depuração
+
 			fmt.Println("Erro ao recuperar estudos: ", err)
 			utils.WriteResponse(w, http.StatusInternalServerError, "Erro ao recuperar estudos")
 			return
@@ -52,13 +51,12 @@ func GetAllStudies(db *db.Database) http.HandlerFunc {
 
 		studiesJSON, err := json.Marshal(studies)
 		if err != nil {
-			// Adicione log detalhado para depuração
+
 			fmt.Println("Erro ao converter estudos para JSON: ", err)
 			utils.WriteResponse(w, http.StatusInternalServerError, "Erro ao converter estudos para JSON")
 			return
 		}
 
-		// Envia a resposta com a lista de estudos no formato JSON
 		utils.WriteResponse(w, http.StatusOK, string(studiesJSON))
 	}
 }
@@ -80,7 +78,6 @@ func GetById(db *db.Database) http.HandlerFunc {
 			return
 		}
 
-		// Envia a resposta com o estudo no formato JSON
 		utils.WriteResponse(w, http.StatusOK, string(studyJSON))
 	}
 }
@@ -92,7 +89,6 @@ func DeleteStudy(db *db.Database) http.HandlerFunc {
 
 		userId := r.Context().Value("UserID").(string)
 
-		// Checa se o usuário é o responsável pelo estudo
 		if err := db.IsStudyOwner(studyId, userId); err != nil {
 			utils.WriteResponse(w, http.StatusUnauthorized, "Você não tem permissão para remover este estudo")
 			return
@@ -115,14 +111,13 @@ func UpdateStudy(db *db.Database) http.HandlerFunc {
 
 		var study types.Study
 		if err := json.NewDecoder(r.Body).Decode(&study); err != nil {
-			log.Printf("Erro ao decodificar JSON: %v", err) // Adicione isto para depuração
+			fmt.Printf("Erro ao decodificar JSON: %v", err)
 			utils.WriteResponse(w, http.StatusBadRequest, "Dados inválidos")
 			return
 		}
 
 		userId := r.Context().Value("UserID").(string)
 
-		// Checa se o usuário é o responsável pelo estudo
 		if err := db.IsStudyOwner(studyId, userId); err != nil {
 			utils.WriteResponse(w, http.StatusUnauthorized, "Você não tem permissão para alterar este estudo")
 			return

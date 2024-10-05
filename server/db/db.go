@@ -16,21 +16,18 @@ type queries interface {
 	Schema() []string
 	SaveMigration() string
 	GetIndexLastMigration() string
-	//USER
 	GetUsers() string
 	GetUserByEmail() string
 	CreateUser() string
 	UpdateUser() string
 	DeleteUser() string
 	GetUserById() string
-	//STUDY
 	CreateStudy() string
 	GetAllStudy() string
 	GetStudyById() string
 	IsStudyOwner() string
 	DeleteStudy() string
 	UpdateStudy() string
-	//THREAD
 	CreateThread() string
 }
 
