@@ -35,10 +35,10 @@ type UpdateUser struct {
 type Study struct {
 	Id                 string    `json:"id" db:"id"`
 	Name               string    `json:"name" db:"name"`
-	Objective          string    `json:"objective" db:"objective"`
-	Methodology        string    `json:"methodology" db:"methodology"`
-	Max_participants   string    `json:"max_participants" db:"max_participants"`
-	Participation_type string    `json:"participation_type" db:"participation_type"`
+	Objective          *string   `json:"objective" db:"objective"`
+	Methodology        *string   `json:"methodology" db:"methodology"`
+	Max_participants   *int      `json:"max_participants" db:"max_participants"`
+	Participation_type *string   `json:"participation_type" db:"participation_type"`
 	CreatedAt          time.Time `json:"created_at" db:"created_at"`
 	Responsible_id     string    `json:"responsible_id" db:"responsible_id"`
 }
@@ -81,6 +81,12 @@ type Responsibles struct {
 	Study_id           string `db:"study_id"`
 	Study_responsible  string `db:"study_responsible"`
 	Thread_responsible string `db:"thread_responsible"`
+}
+
+type UserResponse struct {
+	Id    string `json:"id" db:"id"`
+	Name  string `json:"name" db:"name"`
+	Email string `json:"email" db:"email"`
 }
 
 type UserKey string

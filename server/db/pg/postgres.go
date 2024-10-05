@@ -58,9 +58,39 @@ func (d Driver) CreateStudy() string {
 	`
 }
 
+func (d Driver) GetAllStudy() string {
+	return `
+		SELECT * FROM study
+	`
+}
+
+func (d Driver) GetStudyById() string {
+	return `
+		SELECT * FROM study WHERE id =  $1 
+	`
+}
+
 func (d Driver) IsStudyOwner() string {
 	return `
 		SELECT 1 FROM study WHERE id = $1 AND responsible_id = $2
+	`
+}
+
+func (d Driver) DeleteStudy() string {
+	return `
+		DELETE FROM study WHERE id = $1
+	`
+}
+
+func (d Driver) UpdateStudy() string {
+	return `
+		UPDATE study SET
+		name = $1,
+		objective = $2,
+		methodology = $3,
+		max_participants = $4,
+		participation_type = $5
+		WHERE id = $6
 	`
 }
 
@@ -68,6 +98,24 @@ func (d Driver) CreateThread() string {
 	return `
 		INSERT INTO discussion_thread(id, name, study_id, responsible_id) VALUES ($1, $2, $3, $4)
 	`
+}
+
+func (d Driver) GetUsersByStudy() string {
+	return `
+        SELECT u.id, u.name, u.email FROM users_study us
+        JOIN users u
+        ON us.user_id = u.id
+        WHERE study_id =  $1;
+    `
+}
+
+func (d Driver) GetUsersByThread() string {
+	return `
+        SELECT u.id, u.name, u.email FROM users_thread ut
+        JOIN users u
+        ON u.id = ut.user_id
+        WHERE thread_id = $1
+    `
 }
 
 func (d Driver) IsThreadResponsibleUnion() string {

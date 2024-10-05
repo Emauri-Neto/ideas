@@ -3,10 +3,11 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import ThemeToggler from '@/components/theme-toggler';
 import NavItems from '@/components/nav/navItems';
 import { LoginButton } from '@/components/auth/auth-button';
+import SearchBar from './searchbar';
 
 const Navbar = () => {
     return (
-        <div className='sticky z-50 h-14 inset-x-0 top-0 w-full'>
+        <div className='sticky z-100 h-14 inset-x-0 top-0 w-full backdrop-blur-lg transition-all mb-8'>
             <header className='relative'>
                 <div className='border-b border-gray-200 dark:border-gray-300'>
                     <div className='flex h-16 items-center'>
@@ -15,10 +16,13 @@ const Navbar = () => {
                                 🚀 Ideas
                             </Link>
                         </div>
-
                         <div className='hidden z-50 lg:ml-8 lg:block lg:self-center bg-background'>
                             <NavItems />
                         </div>
+
+                        {/* <div className='mx-2'>
+                            <SearchBar />
+                        </div> */}
 
                         <div className='ml-auto flex items-center'>
                             <div className='hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6'>

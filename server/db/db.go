@@ -21,11 +21,18 @@ type queries interface {
 	GetUserByEmail() string
 	CreateUser() string
 	UpdateUser() string
-	CreateStudy() string
-	IsStudyOwner() string
-	CreateThread() string
 	DeleteUser() string
 	GetUserById() string
+	CreateStudy() string
+	GetAllStudy() string
+	GetStudyById() string
+	IsStudyOwner() string
+	DeleteStudy() string
+	UpdateStudy() string
+	CreateThread() string
+
+	GetUsersByStudy() string
+	GetUsersByThread() string
 	GetThreadById() string
 	IsThreadResponsibleUnion() string
 	ExistInvitationAndUser() string
@@ -96,6 +103,25 @@ func (db *Database) CreateStudy(s types.Study) error {
 	return err
 }
 
+func (db *Database) GetStudyById(id string) (types.Study, error) {
+	var study types.Study
+
+	if err := db.sqlx.Get(&study, db.query.GetStudyById(), id); err != nil {
+		return study, err
+	}
+	return study, nil
+}
+
+func (db *Database) GetAllStudy() ([]types.Study, error) {
+	var studies []types.Study
+
+	if err := db.sqlx.Select(&studies, db.query.GetAllStudy()); err != nil {
+		return nil, err
+	}
+
+	return studies, nil
+}
+
 func (db *Database) IsStudyOwner(id_study, id_user string) error {
 	var exists int
 
@@ -113,10 +139,50 @@ func (db *Database) IsStudyOwner(id_study, id_user string) error {
 	return nil
 }
 
+func (db *Database) DeleteStudy(id string) error {
+	_, err := db.sqlx.Exec(db.query.DeleteStudy(), id)
+
+	return err
+}
+
+func (db *Database) UpdateStudy(s types.Study) error {
+	_, err := db.sqlx.Exec(db.query.UpdateStudy(), s.Name, s.Objective, s.Methodology, s.Max_participants, s.Participation_type, s.Id)
+
+	return err
+}
+
 func (db *Database) CreateThread(t types.Thread) error {
 	_, err := db.sqlx.Exec(db.query.CreateThread(), t.Id, t.Name, t.Study_id, t.Responsible_id)
 
 	return err
+}
+
+func (db Database) GetUsersByStudy(study_id string) ([]types.UserResponse, error) {
+	var users []types.UserResponse
+
+	if err := db.sqlx.Select(&users, db.query.GetUsersByStudy(), study_id); err != nil {
+		return users, err
+	}
+
+	if users == nil {
+		return users, errors.New("nada encontrado")
+	}
+
+	return users, nil
+}
+
+func (db Database) GetUsersByThread(thread_id string) ([]types.UserResponse, error) {
+	var users []types.UserResponse
+
+	if err := db.sqlx.Select(&users, db.query.GetUsersByThread(), thread_id); err != nil {
+		return users, err
+	}
+
+	if users == nil {
+		return users, errors.New("nada encontrado")
+	}
+
+	return users, nil
 }
 
 func (db *Database) GetThreadById(id string) (types.Thread, error) {
