@@ -13,18 +13,21 @@ const OPTS = [
         title: 'Recentes',
         description: 'Ache os estudos mais recentes',
         value: 'recent',
+        color: 'text-blue-500',
         icon: Network
     },
     {
         title: 'Populares',
         description: 'Mais famosos entre o público',
         value: 'popular',
+        color: 'text-emerald-500',
         icon: Popcorn
     },
     {
         title: 'Meus Estudos',
         description: 'Ver estudos privados',
         value: 'owner',
+        color: 'text-purple-600',
         icon: BookDashed
     }
 ];
@@ -48,7 +51,7 @@ export default function Home() {
                                     key={item.value}
                                     onClick={() => setFilter(item.value)}
                                 >
-                                    <item.icon className='h-8 w-8 text-blue-500' />
+                                    <item.icon className={`h-8 w-8 ${item.color}`} />
                                     <div>
                                         <h6>{item.title}</h6>
                                         <p className='text-sm text-muted-foreground'>{item.description}</p>

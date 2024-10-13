@@ -92,19 +92,18 @@ func AcceptInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 
-		vars := mux.Vars(r)
-		inviationId := vars["id"]
+		invID := mux.Vars(r)["id"]
 
 		userId := r.Context().Value("UserID").(string)
 
-		invitation, err := db.GetInvitationOwner(inviationId, userId)
+		invitation, err := db.GetInvitationOwner(invID, userId)
 
 		if err != nil {
 			utils.WriteResponse(w, http.StatusUnauthorized, err.Error())
 			return
 		}
 
-		if err := db.AcceptRefuseInvite(inviationId, true); err != nil {
+		if err := db.AcceptRefuseInvite(invID, true); err != nil {
 			utils.WriteResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}

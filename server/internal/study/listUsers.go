@@ -13,10 +13,9 @@ func ListUsersStudy(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 
-		vars := mux.Vars(r)
-		studyId := vars["id"]
+		studyID := mux.Vars(r)["id"]
 
-		users, err := db.GetUsersByStudy(studyId)
+		users, err := db.GetUsersByStudy(studyID)
 
 		if err != nil {
 			utils.WriteResponse(w, http.StatusNotFound, err.Error())

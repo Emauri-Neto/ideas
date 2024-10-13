@@ -57,8 +57,6 @@ func (s *WebServer) Run() error {
 
 	subrouter.HandleFunc("/thread/{id}/users", study.ListUsersThread(s.db)).Methods("GET")
 
-	subrouter.HandleFunc("/thread/{id}/users", study.ListUsersThread(s.db)).Methods("GET")
-
 	subrouter.Use(secure.IsAuthenticated)
 
 	fmt.Printf("Servidor aqui -> %s 🔥", s.addr)

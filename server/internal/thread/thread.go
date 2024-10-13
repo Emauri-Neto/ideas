@@ -14,7 +14,6 @@ import (
 var thread types.Thread
 
 func CreateThread(db *db.Database) func(http.ResponseWriter, *http.Request) {
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewDecoder(r.Body).Decode(&thread); err != nil {
 			utils.WriteResponse(w, http.StatusBadRequest, err.Error())

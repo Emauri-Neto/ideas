@@ -40,33 +40,29 @@ const StudiesArea: React.FC<StudiesAreaProps> = () => {
         );
     }
 
-    return (
-        <>
-            {study.map(study => (
-                <div className='mb-4 cursor-pointer'>
-                    <div className='bg-secondary p-4 rounded-md flex gap-12'>
-                        <div>Image</div>
-                        <div className='flex flex-col gap-y-1 w-full mx-12'>
-                            <h3 className='font-semibold mx-1'>{study.name}</h3>
-                            <div>
-                                <Badge className='bg-slate-200 dark:bg-gray-900 text-primary '>{study.methodology}</Badge>
-                            </div>
-                            <div className='flex flex-row mt-6 justify-between'>
-                                <div className='flex flex-col'>
-                                    <p>{study.owner}</p>
-                                    <span className='text-muted-foreground text-sm'>{study.created_at}</span>
-                                </div>
-                                <span className='flex gap-2 items-center justify-center'>
-                                    <User className='h-4 w-4' />
-                                    <p>{study.participantes || 1}</p>
-                                </span>
-                            </div>
+    return study.map(study => (
+        <div className='mb-4 cursor-pointer'>
+            <div className='bg-secondary p-4 rounded-md flex gap-12'>
+                <div>Image</div>
+                <div className='flex flex-col gap-y-1 w-full mx-12'>
+                    <h3 className='font-semibold mx-1'>{study.name}</h3>
+                    <div>
+                        <Badge className='bg-slate-200 dark:bg-gray-900 text-primary '>{study.methodology}</Badge>
+                    </div>
+                    <div className='flex flex-row mt-6 justify-between'>
+                        <div className='flex flex-col'>
+                            <p>{study.owner}</p>
+                            <span className='text-muted-foreground text-sm'>{study.created_at}</span>
                         </div>
+                        <span className='flex gap-2 items-center justify-center'>
+                            <User className='h-4 w-4' />
+                            <p>{study.participantes || 1}</p>
+                        </span>
                     </div>
                 </div>
-            ))}
-        </>
-    );
+            </div>
+        </div>
+    ));
 };
 
 export default StudiesArea;

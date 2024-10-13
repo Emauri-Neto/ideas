@@ -13,7 +13,6 @@ import (
 )
 
 func CreateStudy(db *db.Database) func(http.ResponseWriter, *http.Request) {
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		var study types.Study
 		if err := json.NewDecoder(r.Body).Decode(&study); err != nil {
@@ -63,8 +62,7 @@ func GetAllStudies(db *db.Database) http.HandlerFunc {
 
 func GetById(db *db.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		studyId := vars["id"]
+		studyId := mux.Vars(r)["id"]
 
 		study, err := db.GetStudyById(studyId)
 		if err != nil {
@@ -84,8 +82,7 @@ func GetById(db *db.Database) http.HandlerFunc {
 
 func DeleteStudy(db *db.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		studyId := vars["id"]
+		studyId := mux.Vars(r)["id"]
 
 		userId := r.Context().Value("UserID").(string)
 

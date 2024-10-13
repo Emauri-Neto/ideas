@@ -11,23 +11,6 @@ import (
 	"github.com/google/uuid"
 )
 
-func List(db *db.Database) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-
-		u, _u := db.GetUsers()
-
-		if _u != nil {
-			http.Error(w, _u.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		if err := json.NewEncoder(w).Encode(u); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-	}
-}
-
 func GetUser(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
