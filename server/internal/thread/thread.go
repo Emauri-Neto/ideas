@@ -19,9 +19,8 @@ func CreateThread(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-
-		vars := mux.Vars(r)
-		studyId := vars["id"]
+ 
+		studyId := mux.Vars(r)["id"]
 
 		userId := r.Context().Value("UserID").(string)
 		err := db.IsStudyOwner(studyId, userId)
