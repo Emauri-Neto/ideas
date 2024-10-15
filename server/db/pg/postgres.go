@@ -54,7 +54,7 @@ func (d Driver) DeleteUser() string {
 
 func (d Driver) CreateStudy() string {
 	return `
-		INSERT INTO study(id, name, responsible_id) VALUES ($1, $2, $3)
+		INSERT INTO study(id, name, objective, methodology, responsible_id) VALUES ($1, $2, $3, $4, $5)
 	`
 }
 

@@ -2,7 +2,6 @@ package study
 
 import (
 	"encoding/json"
-	"fmt"
 	"ideas/db"
 	"ideas/types"
 	"ideas/utils"
@@ -22,14 +21,16 @@ func CreateStudy(db *db.Database) func(http.ResponseWriter, *http.Request) {
 
 		userId := r.Context().Value("UserID").(string)
 
-		_c := db.CreateStudy(types.Study{
+		_s := db.CreateStudy(types.Study{
 			Id:             uuid.New().String(),
 			Name:           study.Name,
+			Objective:      study.Objective,
+			Methodology:    study.Methodology,
 			Responsible_id: userId,
 		})
 
-		if _c != nil {
-			utils.WriteResponse(w, http.StatusInternalServerError, _c.Error())
+		if _s != nil {
+			utils.WriteResponse(w, http.StatusInternalServerError, _s.Error())
 			return
 		}
 
@@ -41,42 +42,28 @@ func CreateStudy(db *db.Database) func(http.ResponseWriter, *http.Request) {
 func GetAllStudies(db *db.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		studies, err := db.GetAllStudy()
-		if err != nil {
 
-			fmt.Println("Erro ao recuperar estudos: ", err)
-			utils.WriteResponse(w, http.StatusInternalServerError, "Erro ao recuperar estudos")
+		if err != nil {
+			utils.WriteResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		studiesJSON, err := json.Marshal(studies)
-		if err != nil {
-
-			fmt.Println("Erro ao converter estudos para JSON: ", err)
-			utils.WriteResponse(w, http.StatusInternalServerError, "Erro ao converter estudos para JSON")
-			return
-		}
-
-		utils.WriteResponse(w, http.StatusOK, string(studiesJSON))
+		json.NewEncoder(w).Encode(studies)
 	}
 }
 
-func GetById(db *db.Database) http.HandlerFunc {
+func GetStudyById(db *db.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		studyId := mux.Vars(r)["id"]
 
 		study, err := db.GetStudyById(studyId)
+
 		if err != nil {
 			utils.WriteResponse(w, http.StatusNotFound, "Estudo não encontrado")
 			return
 		}
 
-		studyJSON, err := json.Marshal(study)
-		if err != nil {
-			utils.WriteResponse(w, http.StatusInternalServerError, "Erro ao converter o estudo para JSON")
-			return
-		}
-
-		utils.WriteResponse(w, http.StatusOK, string(studyJSON))
+		json.NewEncoder(w).Encode(study)
 	}
 }
 
@@ -103,13 +90,12 @@ func DeleteStudy(db *db.Database) http.HandlerFunc {
 
 func UpdateStudy(db *db.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		studyId := vars["id"]
+		studyId := mux.Vars(r)["id"]
 
 		var study types.Study
+		
 		if err := json.NewDecoder(r.Body).Decode(&study); err != nil {
-			fmt.Printf("Erro ao decodificar JSON: %v", err)
-			utils.WriteResponse(w, http.StatusBadRequest, "Dados inválidos")
+			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 

@@ -34,17 +34,17 @@ func (s *WebServer) Run() error {
 	auth.HandleFunc("/login", user.SignIn(s.db)).Methods("POST")
 
 	subrouter.HandleFunc("/user", user.GetUser(s.db)).Methods("GET")
-	subrouter.HandleFunc("/user/update", user.UpdateUser(s.db)).Methods("PUT")
+	subrouter.HandleFunc("/user/update", user.UpdateUser(s.db)).Methods("PATCH")
 	subrouter.HandleFunc("/user/delete", user.DeleteUser(s.db)).Methods("DELETE")
 	subrouter.HandleFunc("/user/invitations", invitation.ListInvitations(s.db)).Methods("GET")
 
 	subrouter.HandleFunc("/invitation/{id}/accept", invitation.AcceptInvite(s.db)).Methods("GET")
 	subrouter.HandleFunc("/invitation/{id}/refuse", invitation.RefuseInvite(s.db)).Methods("GET")
 
-	subrouter.HandleFunc("/study", study.CreateStudy(s.db)).Methods("POST")
+	subrouter.HandleFunc("/study/create", study.CreateStudy(s.db)).Methods("POST")
 
-	subrouter.HandleFunc("/study/get", study.GetAllStudies(s.db)).Methods("GET")
-	subrouter.HandleFunc("/studies/{id}", study.GetById(s.db)).Methods("GET")
+	subrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")
+	subrouter.HandleFunc("/study/{id}", study.GetStudyById(s.db)).Methods("GET")
 	subrouter.HandleFunc("/study/delete/{id}", study.DeleteStudy(s.db)).Methods("DELETE")
 	subrouter.HandleFunc("/study/update/{id}", study.UpdateStudy(s.db)).Methods("PUT")
 

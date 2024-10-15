@@ -97,17 +97,3 @@ func IsAuthenticated(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
-
-func GetTokenFromRequest(r *http.Request) (string, error) {
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		return "", fmt.Errorf("cabeçalho Authorization não encontrado")
-	}
-
-	parts := strings.Split(authHeader, " ")
-	if len(parts) != 2 || parts[0] != "Bearer" {
-		return "", fmt.Errorf("cabeçalho Authorization inválido")
-	}
-
-	return parts[1], nil
-}
