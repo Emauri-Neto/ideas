@@ -13,33 +13,29 @@ import (
 
 func GetUser(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-
 		userId := r.Context().Value("UserID").(string)
 
 		u, _u := db.GetUsersById(userId)
 
 		if _u != nil {
-			http.Error(w, _u.Error(), http.StatusInternalServerError)
+			utils.WriteResponse(w, http.StatusBadRequest, _u.Error())
 			return
 		}
 
 		if err := json.NewEncoder(w).Encode(u); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 		}
 	}
 }
 
 func SignIn(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var user types.LoginCredentials
+		user := struct {
+			Email    string
+			Password string
+		}{}
 
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		if err := ValidEmail(user.Email); err != nil {
 			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -73,14 +69,15 @@ func SignIn(db *db.Database) func(http.ResponseWriter, *http.Request) {
 
 func SignUp(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var user types.RegisterCredentials
+		user := struct {
+			Id              string
+			Email           string
+			Password        string
+			ConfirmPassword string
+			Name            string
+		}{}
 
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		if err := ValidUser(&user); err != nil {
 			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -117,14 +114,11 @@ func SignUp(db *db.Database) func(http.ResponseWriter, *http.Request) {
 
 func UpdateUser(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var user types.UpdateUser
+		user := struct {
+			Name string
+		}{}
 
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		if err := ValidUserUpdate(&user); err != nil {
 			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}

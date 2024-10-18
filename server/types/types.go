@@ -13,24 +13,6 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
-type LoginCredentials struct {
-	Email    string
-	Password string
-}
-
-type RegisterCredentials struct {
-	Id              string
-	Email           string
-	Password        string
-	ConfirmPassword string
-	Name            string
-}
-
-type UpdateUser struct {
-	Id   string
-	Name string
-}
-
 type Study struct {
 	Id                 string    `json:"id" db:"id"`
 	Name               string    `json:"name" db:"name"`
@@ -87,5 +69,3 @@ type UserResponse struct {
 	Name  string `json:"name" db:"name"`
 	Email string `json:"email" db:"email"`
 }
-
-type UserKey string
