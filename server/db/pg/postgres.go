@@ -30,7 +30,7 @@ func (d Driver) GetUserByEmail() string {
 
 func (d Driver) GetUserById() string {
 	return `
-		SELECT id, name FROM users WHERE id = $1
+		SELECT id, name, email FROM users WHERE id = $1
 	`
 }
 

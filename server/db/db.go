@@ -113,7 +113,7 @@ func (db *Database) GetStudyById(id string) (types.Study, error) {
 }
 
 func (db *Database) GetAllStudy() ([]types.Study, error) {
-	var studies []types.Study
+	studies := []types.Study{}
 
 	if err := db.sqlx.Select(&studies, db.query.GetAllStudy()); err != nil {
 		return studies, err

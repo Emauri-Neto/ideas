@@ -19,13 +19,11 @@ func GetEnv(key string) (string, error) {
 
 func WriteResponse(w http.ResponseWriter, status uint, message string) error {
 	var r struct {
-		Status  uint `json:"status"`
 		Message string `json:"message"`
 	}
 
-	r.Status = status
 	r.Message = message
-	w.WriteHeader(int(status))
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(int(status))
 	return json.NewEncoder(w).Encode(r)
 }
