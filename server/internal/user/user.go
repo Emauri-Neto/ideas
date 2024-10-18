@@ -67,8 +67,7 @@ func SignIn(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"token": token})
+		utils.WriteResponse(w, http.StatusOK, map[string]string{"token": token})
 	}
 }
 

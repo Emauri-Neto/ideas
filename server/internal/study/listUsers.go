@@ -1,7 +1,6 @@
 package study
 
 import (
-	"encoding/json"
 	"ideas/db"
 	"ideas/utils"
 	"net/http"
@@ -11,8 +10,6 @@ import (
 
 func ListUsersStudy(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-
 		studyID := mux.Vars(r)["id"]
 
 		users, err := db.GetUsersByStudy(studyID)
@@ -22,16 +19,13 @@ func ListUsersStudy(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		json.NewEncoder(w).Encode(users)
+		utils.WriteResponse(w, http.StatusNotFound, users)
 	}
 }
 
 func ListUsersThread(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-
-		vars := mux.Vars(r)
-		threadId := vars["id"]
+		threadId := mux.Vars(r)["id"]
 
 		users, err := db.GetUsersByThread(threadId)
 
@@ -40,6 +34,6 @@ func ListUsersThread(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		json.NewEncoder(w).Encode(users)
+		utils.WriteResponse(w, http.StatusNotFound, users)
 	}
 }

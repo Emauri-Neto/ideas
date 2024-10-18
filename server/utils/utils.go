@@ -17,13 +17,8 @@ func GetEnv(key string) (string, error) {
 	return "", fmt.Errorf("variavel ambiente %s nao encontrada", key)
 }
 
-func WriteResponse(w http.ResponseWriter, status uint, message string) error {
-	var r struct {
-		Message string `json:"message"`
-	}
-
-	r.Message = message
+func WriteResponse(w http.ResponseWriter, status uint, payload any) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(int(status))
-	return json.NewEncoder(w).Encode(r)
+	return json.NewEncoder(w).Encode(payload)
 }

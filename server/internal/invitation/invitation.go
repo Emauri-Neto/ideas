@@ -20,8 +20,7 @@ func CreateInvitation(db *db.Database) func(http.ResponseWriter, *http.Request) 
 			return
 		}
 
-		vars := mux.Vars(r)
-		threadId := vars["id"]
+		threadId := mux.Vars(r)["id"]
 
 		responsibles, err := db.GetResponsibleAndStudyId(threadId)
 
@@ -70,8 +69,6 @@ func CreateInvitation(db *db.Database) func(http.ResponseWriter, *http.Request) 
 
 func ListInvitations(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-
 		userId := r.Context().Value("UserID").(string)
 
 		u, _u := db.GetInvitationsByReceiver(userId)
@@ -90,8 +87,6 @@ func ListInvitations(db *db.Database) func(http.ResponseWriter, *http.Request) {
 
 func AcceptInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-
 		invID := mux.Vars(r)["id"]
 
 		userId := r.Context().Value("UserID").(string)
@@ -119,20 +114,17 @@ func AcceptInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
 
 func RefuseInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-
-		vars := mux.Vars(r)
-		inviationId := vars["id"]
+		inviationId := mux.Vars(r)["id"]
 
 		userId := r.Context().Value("UserID").(string)
 
 		if _, err := db.GetInvitationOwner(inviationId, userId); err != nil {
-			http.Error(w, err.Error(), http.StatusUnauthorized)
+			utils.WriteResponse(w, http.StatusOK, err.Error())
 			return
 		}
 
 		if err := db.AcceptRefuseInvite(inviationId, false); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			utils.WriteResponse(w, http.StatusOK, err.Error())
 			return
 		}
 

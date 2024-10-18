@@ -48,7 +48,7 @@ func GetAllStudies(db *db.Database) http.HandlerFunc {
 			return
 		}
 
-		json.NewEncoder(w).Encode(studies)
+		utils.WriteResponse(w, http.StatusOK, studies)
 	}
 }
 
@@ -63,7 +63,7 @@ func GetStudyById(db *db.Database) http.HandlerFunc {
 			return
 		}
 
-		json.NewEncoder(w).Encode(study)
+		utils.WriteResponse(w, http.StatusOK, study)
 	}
 }
 
