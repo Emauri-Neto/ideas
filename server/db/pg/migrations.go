@@ -140,3 +140,25 @@ func createUsersThreadTable() string {
 		)	
 	`
 }
+
+func (d Driver) CreateMiddleTableUser() string {
+	return `
+		WITH ins1 AS (
+			INSERT INTO users_study(id, user_id, study_id)
+			SELECT $1, $2, $3
+			WHERE NOT EXISTS (
+				SELECT 1 
+				FROM users_study 
+				WHERE user_id = $2 AND study_id = $3
+			)
+			RETURNING id
+		)
+		INSERT INTO users_thread(id, user_id, thread_id, role)
+		SELECT $4, $2, $5, $6
+		WHERE NOT EXISTS (
+			SELECT 1
+			FROM users_thread
+			WHERE user_id = $2 AND thread_id = $5
+		)
+	`
+}

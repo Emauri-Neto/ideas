@@ -17,7 +17,6 @@ type queries interface {
 	Schema() []string
 	SaveMigration() string
 	GetIndexLastMigration() string
-	GetUsers() string
 	GetUserByEmail() string
 	CreateUser() string
 	UpdateUser() string
@@ -47,16 +46,6 @@ type queries interface {
 type Database struct {
 	sqlx  *sqlx.DB
 	query queries
-}
-
-func (db *Database) GetUsers() ([]types.User, error) {
-	var users []types.User
-
-	if err := db.sqlx.Select(&users, db.query.GetUsers()); err != nil {
-		return users, nil
-	}
-
-	return users, nil
 }
 
 func (db *Database) GetUsersById(id string) (types.User, error) {
