@@ -34,8 +34,8 @@ func (s *WebServer) Run() error {
 	authrouter.HandleFunc("/login", user.SignIn(s.db)).Methods("POST")
 
 	subrouter.HandleFunc("/user", user.GetUser(s.db)).Methods("GET")
-	subrouter.HandleFunc("/user/update", user.UpdateUser(s.db)).Methods("PATCH")
-	subrouter.HandleFunc("/user/delete", user.DeleteUser(s.db)).Methods("DELETE")
+	subrouter.HandleFunc("/user", user.UpdateUser(s.db)).Methods("PATCH")
+	subrouter.HandleFunc("/user", user.DeleteUser(s.db)).Methods("DELETE")
 	subrouter.HandleFunc("/user/invitations", invitation.ListInvitations(s.db)).Methods("GET")
 
 	subrouter.HandleFunc("/invitation/{id}/accept", invitation.AcceptInvite(s.db)).Methods("GET")

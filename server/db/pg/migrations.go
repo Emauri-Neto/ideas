@@ -30,20 +30,6 @@ func createUserTable() string {
 	`
 }
 
-func createWorkspace() string {
-	return `
-		CREATE TABLE workspace(
-			id UUID PRIMARY KEY,
-			subject TEXT NOT NULL,
-			isPrivate BOOLEAN DEFAULT TRUE,
-			content TEXT NOT NULL,
-			user_id UUID NOT NULL,
-
-    		CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-		)
-	`
-}
-
 func createStudyTable() string {
 	return `
 		CREATE TABLE  study (
