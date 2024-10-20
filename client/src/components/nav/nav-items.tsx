@@ -1,13 +1,12 @@
 'use client';
 
-import React from 'react';
-import { buttonVariants } from '@/components/ui/button';
-import { BookAIcon, HomeIcon } from 'lucide-react';
+import { HomeIcon, BookCopy } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { buttonVariants } from '@/components/ui/button';
 
-export const NAV = [
+const NAV = [
     {
         description: 'Inicio',
         href: '/',
@@ -16,12 +15,13 @@ export const NAV = [
     {
         description: 'Estudos',
         href: '/r/study',
-        icon: BookAIcon
+        icon: BookCopy
     }
 ];
 
 const NavItems = () => {
     const path = usePathname();
+
     return (
         <div className='w-full'>
             <TooltipProvider>
@@ -30,9 +30,9 @@ const NavItems = () => {
                         <TooltipTrigger asChild>
                             <Link
                                 href={item.href}
-                                className={buttonVariants({ variant: path === item.href ? 'secondary' : 'ghost', className: 'mx-1' })}
+                                className={buttonVariants({ variant: path === item.href ? 'default' : 'ghost', className: 'mx-1' })}
                             >
-                                <item.icon className='w-5 h-5' />
+                                <item.icon />
                             </Link>
                         </TooltipTrigger>
                         <TooltipContent>
