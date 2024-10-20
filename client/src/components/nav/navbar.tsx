@@ -8,11 +8,11 @@ import { Button, buttonVariants } from '@/components/ui/button';
 const Navbar = () => {
     const user = undefined;
     return (
-        <div className='sticky z-100 h-20 inset-x-0 top-0 w-full backdrop-blur-lg transition-all'>
+        <div className='sticky z-100 h-20 inset-x-0 top-0 w-full backdrop-blur-lg transition-all bg-secondary'>
             <header className='relative'>
-                <nav className='border-b px-10'>
+                <nav className='border-b px-2 md:px-10'>
                     <div className='flex h-20 items-center'>
-                        <Link href='/' className='text-3xl font-medium italic mr-10'>
+                        <Link href='/' className='text-3xl font-medium italic mr-5'>
                             <Icons.logo className='w-44 h-16 fill-black dark:fill-white' />
                         </Link>
 
@@ -27,25 +27,29 @@ const Navbar = () => {
                                 </div>
 
                                 <div className='flow-root lg:ml-6'>
-                                    <Button variant='ghost'>
+                                    <Button variant='ghost' className='hover:bg-gray-400/60 hover:dark:bg-gray-900'>
                                         <Bell />
                                     </Button>
                                 </div>
 
-                                {user ? <span className='h-6 w-px bg-gray-200 dark:bg-gray-300' aria-hidden='true' /> : null}
+                                {user ? <span className='h-6 w-px bg-gray-300 dark:bg-gray-300' aria-hidden='true' /> : null}
+
                                 {user ? null : (
                                     <div className='flex lg:ml-6 '>
-                                        <span className='h-6 w-px bg-gray-200 dark:bg-gray-300' aria-hidden='true' />
+                                        <span className='h-6 w-px bg-gray-300 dark:bg-gray-300' aria-hidden='true' />
                                     </div>
                                 )}
 
                                 {user ? null : (
-                                    <Link href='/sign-in' className={buttonVariants({ variant: 'ghost' })}>
+                                    <Link
+                                        href='/sign-in'
+                                        className={buttonVariants({ variant: 'ghost', className: 'hover:bg-gray-300 hover:dark:bg-gray-900' })}
+                                    >
                                         Entrar
                                     </Link>
                                 )}
 
-                                {user ? null : <span className='h-6 w-px bg-gray-200' aria-hidden='true' />}
+                                {user ? null : <span className='h-6 w-px bg-gray-300' aria-hidden='true' />}
 
                                 {user ? (
                                     <>
@@ -53,7 +57,10 @@ const Navbar = () => {
                                         aaa
                                     </>
                                 ) : (
-                                    <Link href='/sign-up' className={buttonVariants({ variant: 'ghost' })}>
+                                    <Link
+                                        href='/sign-up'
+                                        className={buttonVariants({ variant: 'ghost', className: 'hover:bg-gray-300 hover:dark:bg-gray-900' })}
+                                    >
                                         Criar Conta
                                     </Link>
                                 )}

@@ -30,7 +30,10 @@ const NavItems = () => {
                         <TooltipTrigger asChild>
                             <Link
                                 href={item.href}
-                                className={buttonVariants({ variant: path === item.href ? 'default' : 'ghost', className: 'mx-1' })}
+                                className={buttonVariants({
+                                    variant: path === item.href ? 'default' : 'ghost',
+                                    className: `mx-1 ${path !== item.href ? 'hover:bg-gray-300 hover:dark:bg-gray-900' : ''}`
+                                })}
                             >
                                 <item.icon />
                             </Link>
