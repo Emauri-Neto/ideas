@@ -30,6 +30,7 @@ func (s *WebServer) Run() error {
 	publicrouter := router.PathPrefix("/s").Subrouter()
 	subrouter := router.PathPrefix("/api").Subrouter()
 	authrouter := router.PathPrefix("/auth").Subrouter()
+	commomrouter := router.PathPrefix("/r").Subrouter()
 
 	authrouter.HandleFunc("/register", user.SignUp(s.db)).Methods("POST")
 	authrouter.HandleFunc("/login", user.SignIn(s.db)).Methods("POST")
@@ -41,6 +42,8 @@ func (s *WebServer) Run() error {
 
 	subrouter.HandleFunc("/invitation/{id}/accept", invitation.AcceptInvite(s.db)).Methods("GET")
 	subrouter.HandleFunc("/invitation/{id}/refuse", invitation.RefuseInvite(s.db)).Methods("GET")
+
+	commomrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")
 
 	subrouter.HandleFunc("/study/create", study.CreateStudy(s.db)).Methods("POST")
 	publicrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")
