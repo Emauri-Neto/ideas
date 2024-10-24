@@ -33,6 +33,7 @@ type queries interface {
 	GetUsersByStudy() string
 	GetUsersByThread() string
 	GetThreadById() string
+	ListThreads() string
 	IsThreadResponsibleUnion() string
 	ExistInvitationAndUser() string
 	CreateInvitationWith() string
@@ -87,7 +88,7 @@ func (db *Database) DeleteUser(id string) error {
 }
 
 func (db *Database) CreateStudy(s types.Study) error {
-	_, err := db.sqlx.Exec(db.query.CreateStudy(), s.Id, s.Name,s.Objective, s.Methodology, s.Num_participants, s.Max_participants, s.Responsible_id)
+	_, err := db.sqlx.Exec(db.query.CreateStudy(), s.Id, s.Name, s.Objective, s.Methodology, s.Num_participants, s.Max_participants, s.Responsible_id)
 
 	return err
 }
@@ -141,7 +142,7 @@ func (db *Database) UpdateStudy(s types.Study) error {
 }
 
 func (db *Database) CreateThread(t types.Thread) error {
-	_, err := db.sqlx.Exec(db.query.CreateThread(), t.Id, t.Name, t.Study_id, t.Responsible_id)
+	_, err := db.sqlx.Exec(db.query.CreateThread(), t.Id, t.Name, t.Status, t.Study_id, t.Responsible_id)
 
 	return err
 }
@@ -172,6 +173,16 @@ func (db Database) GetUsersByThread(thread_id string) ([]types.UserResponse, err
 	}
 
 	return users, nil
+}
+
+func (db Database) ListThreadsInStudy(s string) ([]types.Thread, error) {
+	t := []types.Thread{}
+
+	if err := db.sqlx.Select(&t, db.query.ListThreads(), s); err != nil {
+		return t, err
+	}
+
+	return t, nil
 }
 
 func (db *Database) GetThreadById(id string) (types.Thread, error) {

@@ -19,7 +19,7 @@ func CreateThread(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
- 
+
 		studyId := mux.Vars(r)["id"]
 
 		userId := r.Context().Value("UserID").(string)
@@ -31,6 +31,7 @@ func CreateThread(db *db.Database) func(http.ResponseWriter, *http.Request) {
 		_c := db.CreateThread(types.Thread{
 			Id:             uuid.New().String(),
 			Name:           thread.Name,
+			Status:         thread.Status,
 			Responsible_id: userId,
 			Study_id:       studyId,
 		})
@@ -41,5 +42,20 @@ func CreateThread(db *db.Database) func(http.ResponseWriter, *http.Request) {
 		}
 
 		utils.WriteResponse(w, http.StatusCreated, "Thread Criada com sucesso")
+	}
+}
+
+func ListThreads(db *db.Database) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		study := mux.Vars(r)["id"]
+
+		t, _t := db.ListThreadsInStudy(study)
+
+		if _t != nil {
+			utils.WriteResponse(w, http.StatusNotFound, _t.Error())
+			return
+		}
+
+		utils.WriteResponse(w, http.StatusOK, t)
 	}
 }

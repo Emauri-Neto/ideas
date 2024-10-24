@@ -30,7 +30,7 @@ type Thread struct {
 	Id                  string    `json:"id" db:"id"`
 	Name                string    `json:"name" db:"name"`
 	Max_participants    *uint     `json:"max_participantes,omitempty" db:"max_participants"`
-	Discussion_deadline time.Time `json:"discussion_deadline" db:"discussion_deadline"`
+	Discussion_deadline *time.Time `json:"discussion_deadline" db:"discussion_deadline"`
 	Status              string    `json:"status" db:"status"`
 	CreatedAt           time.Time `json:"created_at" db:"created_at"`
 	Responsible_id      string    `json:"responsible_id" db:"responsible_id"`
