@@ -2,6 +2,7 @@ package invitation
 
 import (
 	"encoding/json"
+	"errors"
 	"ideas/db"
 	"ideas/types"
 	"ideas/utils"
@@ -85,8 +86,15 @@ func ListInvitations(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-func AcceptInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
+func AcceptRefuseInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		status := r.URL.Query().Get("status")
+
+		if status != "accept" && status != "refuse" {
+			utils.WriteResponse(w, http.StatusUnauthorized, errors.New("opção inválida"))
+			return
+		}
+
 		invID := mux.Vars(r)["id"]
 
 		userId := r.Context().Value("UserID").(string)
@@ -98,7 +106,7 @@ func AcceptInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		if err := db.AcceptRefuseInvite(invID, true); err != nil {
+		if err := db.AcceptRefuseInvite(invID, status); err != nil {
 			utils.WriteResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -108,26 +116,7 @@ func AcceptInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		utils.WriteResponse(w, http.StatusOK, "Convite aceito")
-	}
-}
-
-func RefuseInvite(db *db.Database) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		inviationId := mux.Vars(r)["id"]
-
-		userId := r.Context().Value("UserID").(string)
-
-		if _, err := db.GetInvitationOwner(inviationId, userId); err != nil {
-			utils.WriteResponse(w, http.StatusOK, err.Error())
-			return
-		}
-
-		if err := db.AcceptRefuseInvite(inviationId, false); err != nil {
-			utils.WriteResponse(w, http.StatusOK, err.Error())
-			return
-		}
-
-		utils.WriteResponse(w, http.StatusOK, "Convite recusado")
+		msg := "Convite " + status
+		utils.WriteResponse(w, http.StatusOK, msg)
 	}
 }

@@ -40,8 +40,7 @@ func (s *WebServer) Run() error {
 	subrouter.HandleFunc("/user", user.DeleteUser(s.db)).Methods("DELETE")
 	subrouter.HandleFunc("/user/invitations", invitation.ListInvitations(s.db)).Methods("GET")
 
-	subrouter.HandleFunc("/invitation/{id}/accept", invitation.AcceptInvite(s.db)).Methods("GET")
-	subrouter.HandleFunc("/invitation/{id}/refuse", invitation.RefuseInvite(s.db)).Methods("GET")
+	subrouter.HandleFunc("/study/invitation/{id}", invitation.AcceptRefuseInvite(s.db)).Methods("GET")
 
 	commomrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")
 

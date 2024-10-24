@@ -37,7 +37,7 @@ func (d Driver) ExistInvitationAndUser() string {
 
 func (d Driver) GetInvitationsByReceiver() string {
 	return `
-		SELECT DISTINCT i.id, i.text, i.type, i.study_id, i.thread_id, i.accept
+		SELECT DISTINCT i.id, i.text, i.type, i.study_id, i.thread_id, i.status
 		FROM invitation i
 		JOIN users_invitation ui 
 		ON ui.invitation_id = i.id 
@@ -50,7 +50,7 @@ func (d Driver) GetInvitationOwner() string {
 		WITH  invitations AS (
 			SELECT *
 			FROM invitation
-			WHERE id = $1 AND accept IS NULL
+			WHERE id = $1 AND status = 'pending'
 		) SELECT i.*
 			FROM invitations i
 			JOIN users_invitation ui
@@ -62,7 +62,7 @@ func (d Driver) GetInvitationOwner() string {
 func (d Driver) AcceptRefuseInvitation() string {
 	return `
 		UPDATE invitation
-		SET accept = $1
+		SET status = $1
 		WHERE id = $2
 	`
 }
