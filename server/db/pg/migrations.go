@@ -71,7 +71,7 @@ func createInvitationTable() string {
 			id UUID PRIMARY KEY,
 			text TEXT,
 			type TEXT,
-			accept BOOLEAN,
+			status TEXT DEFAULT 'pending',
 			study_id UUID NOT NULL,
 			thread_id UUID NOT NULL,
 			created_at TIMESTAMPTZ DEFAULT (CURRENT_TIMESTAMP - INTERVAL '3 hours'),

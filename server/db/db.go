@@ -87,7 +87,7 @@ func (db *Database) DeleteUser(id string) error {
 }
 
 func (db *Database) CreateStudy(s types.Study) error {
-	_, err := db.sqlx.Exec(db.query.CreateStudy(), s.Id, s.Name,s.Objective, s.Methodology, s.Responsible_id)
+	_, err := db.sqlx.Exec(db.query.CreateStudy(), s.Id, s.Name, s.Objective, s.Methodology, s.Responsible_id)
 
 	return err
 }
@@ -247,8 +247,8 @@ func (db *Database) GetInvitationOwner(invitation_id, user_id string) (types.Inv
 	return invitation, nil
 }
 
-func (db *Database) AcceptRefuseInvite(invitation_id string, accept bool) error {
-	_, err := db.sqlx.Exec(db.query.AcceptRefuseInvitation(), accept, invitation_id)
+func (db *Database) AcceptRefuseInvite(invitation_id string, status string) error {
+	_, err := db.sqlx.Exec(db.query.AcceptRefuseInvitation(), status, invitation_id)
 
 	if err != nil {
 		return err
