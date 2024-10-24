@@ -27,6 +27,7 @@ func Serve(addr string, db *db.Database) *WebServer {
 
 func (s *WebServer) Run() error {
 	router := mux.NewRouter()
+	publicrouter := router.PathPrefix("/s").Subrouter()
 	subrouter := router.PathPrefix("/api").Subrouter()
 	authrouter := router.PathPrefix("/auth").Subrouter()
 	commomrouter := router.PathPrefix("/r").Subrouter()
@@ -45,6 +46,7 @@ func (s *WebServer) Run() error {
 	commomrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")
 
 	subrouter.HandleFunc("/study/create", study.CreateStudy(s.db)).Methods("POST")
+	publicrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")
 	subrouter.HandleFunc("/study/{id}", study.GetStudyById(s.db)).Methods("GET")
 	subrouter.HandleFunc("/study/{id}", study.DeleteStudy(s.db)).Methods("DELETE")
 	subrouter.HandleFunc("/study/{id}", study.UpdateStudy(s.db)).Methods("PUT")
