@@ -2,7 +2,8 @@ package pg
 
 func (d Driver) CreateStudy() string {
 	return `
-		INSERT INTO study(id, name, objective, methodology, responsible_id) VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO study(id, name, objective, methodology, num_participants, max_participants, responsible_id) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 }
 

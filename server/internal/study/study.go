@@ -26,6 +26,8 @@ func CreateStudy(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			Name:           study.Name,
 			Objective:      study.Objective,
 			Methodology:    study.Methodology,
+			Num_participants: 1,
+			Max_participants: study.Max_participants,
 			Responsible_id: userId,
 		})
 

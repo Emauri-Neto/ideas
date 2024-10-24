@@ -87,7 +87,7 @@ func (db *Database) DeleteUser(id string) error {
 }
 
 func (db *Database) CreateStudy(s types.Study) error {
-	_, err := db.sqlx.Exec(db.query.CreateStudy(), s.Id, s.Name,s.Objective, s.Methodology, s.Responsible_id)
+	_, err := db.sqlx.Exec(db.query.CreateStudy(), s.Id, s.Name,s.Objective, s.Methodology, s.Num_participants, s.Max_participants, s.Responsible_id)
 
 	return err
 }
