@@ -2,7 +2,7 @@ package pg
 
 func (d Driver) CreateThread() string {
 	return `
-		INSERT INTO discussion_thread(id, name, study_id, responsible_id) VALUES ($1, $2, $3, $4)
+		INSERT INTO discussion_thread(id, name,status, study_id, responsible_id) VALUES ($1, $2, $3, $4, $5)
 	`
 }
 
@@ -26,5 +26,11 @@ func (d Driver) IsThreadResponsibleUnion() string {
 func (d Driver) GetThreadById() string {
 	return `
 		SELECT id, name, study_id FROM discussion_thread WHERE id = $1
+	`
+}
+
+func (d Driver) ListThreads() string {
+	return `
+		SELECT * FROM discussion_thread WHERE study_id = $1
 	`
 }

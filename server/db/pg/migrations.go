@@ -37,9 +37,11 @@ func createStudyTable() string {
 			name TEXT NOT NULL,
 			objective TEXT,
 			methodology TEXT,
-			max_participants INTEGER,
+			num_participants INT,
+			max_participants INT,
 			participation_type TEXT,
 			created_at TIMESTAMPTZ DEFAULT (CURRENT_TIMESTAMP - INTERVAL '3 hours'),
+			updated_at TIMESTAMPTZ DEFAULT (CURRENT_TIMESTAMP - INTERVAL '3 hours'),
 			
 			responsible_id UUID NOT NULL,
 			CONSTRAINT fk_responsible FOREIGN KEY (responsible_id) REFERENCES users (id) ON DELETE CASCADE

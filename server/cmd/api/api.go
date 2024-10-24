@@ -27,8 +27,10 @@ func Serve(addr string, db *db.Database) *WebServer {
 
 func (s *WebServer) Run() error {
 	router := mux.NewRouter()
+	publicrouter := router.PathPrefix("/s").Subrouter()
 	subrouter := router.PathPrefix("/api").Subrouter()
 	authrouter := router.PathPrefix("/auth").Subrouter()
+	commomrouter := router.PathPrefix("/r").Subrouter()
 
 	authrouter.HandleFunc("/register", user.SignUp(s.db)).Methods("POST")
 	authrouter.HandleFunc("/login", user.SignIn(s.db)).Methods("POST")
@@ -40,14 +42,16 @@ func (s *WebServer) Run() error {
 
 	subrouter.HandleFunc("/study/invitation/{id}", invitation.AcceptRefuseInvite(s.db)).Methods("GET")
 
+	commomrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")
+
 	subrouter.HandleFunc("/study/create", study.CreateStudy(s.db)).Methods("POST")
-	subrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")
+	publicrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")
 	subrouter.HandleFunc("/study/{id}", study.GetStudyById(s.db)).Methods("GET")
 	subrouter.HandleFunc("/study/{id}", study.DeleteStudy(s.db)).Methods("DELETE")
 	subrouter.HandleFunc("/study/{id}", study.UpdateStudy(s.db)).Methods("PUT")
 	subrouter.HandleFunc("/study/{id}/thread", thread.CreateThread(s.db)).Methods("POST")
 	subrouter.HandleFunc("/study/{id}/users", study.ListUsersStudy(s.db)).Methods("GET")
-	subrouter.HandleFunc("/study/{id}/thread", thread.CreateThread(s.db)).Methods("POST")
+	subrouter.HandleFunc("/study/{id}/thread", thread.ListThreads(s.db)).Methods("GET")
 
 	subrouter.HandleFunc("/thread/{id}/invite", invitation.CreateInvitation(s.db)).Methods("POST")
 	subrouter.HandleFunc("/thread/{id}/users", study.ListUsersThread(s.db)).Methods("GET")
