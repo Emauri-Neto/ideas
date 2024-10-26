@@ -50,11 +50,11 @@ func (s *WebServer) Run() error {
 	subrouter.HandleFunc("/study/{id}", study.DeleteStudy(s.db)).Methods("DELETE")
 	subrouter.HandleFunc("/study/{id}", study.UpdateStudy(s.db)).Methods("PUT")
 	subrouter.HandleFunc("/study/{id}/thread", thread.CreateThread(s.db)).Methods("POST")
-	subrouter.HandleFunc("/study/{id}/users", study.ListUsersStudy(s.db)).Methods("GET")
+	subrouter.HandleFunc("/study/{id}/users", user.ListUsersStudy(s.db)).Methods("GET")
 	subrouter.HandleFunc("/study/{id}/thread", thread.ListThreads(s.db)).Methods("GET")
 
 	subrouter.HandleFunc("/thread/{id}/invite", invitation.CreateInvitation(s.db)).Methods("POST")
-	subrouter.HandleFunc("/thread/{id}/users", study.ListUsersThread(s.db)).Methods("GET")
+	subrouter.HandleFunc("/thread/{id}/users", user.ListUsersThread(s.db)).Methods("GET")
 
 	subrouter.Use(auth.IsAuthenticated)
 

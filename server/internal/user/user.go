@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 )
 
 func GetUser(db *db.Database) func(http.ResponseWriter, *http.Request) {
