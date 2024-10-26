@@ -43,6 +43,7 @@ func (s *WebServer) Run() error {
 	subrouter.HandleFunc("/study/invitation/{id}", invitation.AcceptRefuseInvite(s.db)).Methods("GET")
 
 	commomrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")
+	commomrouter.HandleFunc("/study/{id}/thread", thread.ListThreads(s.db)).Methods("GET")
 
 	subrouter.HandleFunc("/study/create", study.CreateStudy(s.db)).Methods("POST")
 	publicrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")

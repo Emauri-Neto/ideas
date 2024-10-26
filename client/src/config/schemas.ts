@@ -22,3 +22,27 @@ export const registerSchema = loginSchema
         message: 'As senhas não coincidem.',
         path: ['confirmPassword']
     });
+
+export const studySchema = z.object({
+    id: z.string().uuid(),
+    name: z.string(),
+    objective: z.string(),
+    methodology: z.string(),
+    num_participants: z.number(),
+    max_participants: z.number().optional(),
+    participation_type: z.string().optional(),
+    created_at: z.date(),
+    updated_at: z.date(),
+    responsible_id: z.string()
+});
+
+export const threadSchema = z.object({
+    id: z.string().uuid(),
+    name: z.string(),
+    max_participants: z.number().optional(),
+    deadline: z.date().optional(),
+    status: z.string(),
+    created_at: z.date(),
+    responsible_id: z.string(),
+    study_id: z.string()
+});

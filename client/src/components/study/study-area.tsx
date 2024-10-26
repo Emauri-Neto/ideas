@@ -3,27 +3,12 @@ import { Ghost, User2Icon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { listStudies } from '@/actions/list';
+import ThreadArea from '../thread/thread-area';
 
-const study = [
-    {
-        id: 'cbf5e25d-1e4d-4cc5-83bc-9266a21aee02',
-        name: 'Meu estudo',
-        objective: 'Descobrir o mundo',
-        methodology: 'ChatGPT',
-        created_at: '2024-10-17T21:50:04.882913Z',
-        responsible_id: 'dc65b81f-4c35-4659-bb60-fe5b73a0d98e'
-    },
-    {
-        id: 'cbf5e25d-1e4d-4cc5-83bc-9266a21aee02',
-        name: 'Seu estudo',
-        objective: 'Descobrir o mundo',
-        methodology: 'ChatGPT',
-        created_at: '2024-10-17T21:50:04.882913Z',
-        responsible_id: 'dc65b81f-4c35-4659-bb60-fe5b73a0d98e'
-    }
-];
+const StudyArea = async () => {
+    const study = await listStudies();
 
-const StudyArea = () => {
     function truncateString(str: string, maxLength: number) {
         if (str.length > maxLength) {
             return str.slice(0, maxLength) + '...';
@@ -45,7 +30,7 @@ const StudyArea = () => {
     }
 
     return study.map(s => (
-        <div className='mb-4'>
+        <div className='mb-4' key={s.id}>
             <div className='bg-secondary p-4 rounded-md flex gap-12'>
                 <div className='flex flex-col w-full'>
                     <div className='flex flex-row items-center w-full bg-gray-300 dark:bg-gray-900 px-3 py-3 rounded-sm'>
@@ -61,16 +46,18 @@ const StudyArea = () => {
                         <div className='ml-auto flex flex-row items-center gap-4'>
                             <div className='flex flex-row gap-1 items-center'>
                                 <p>
-                                    <span className='text-muted-foreground'>1</span>
+                                    <span className='text-muted-foreground'>{s.num_participants}</span>
                                     <span className='px-1'>/</span>
-                                    10
+                                    {s.max_participants}
                                 </p>
                                 <User2Icon className='w-4 h-4' />
                             </div>
                             <Button className='p-3'>Sugerir Nova Linha de Discussão</Button>
                         </div>
                     </div>
-                    <div>ss</div>
+                    <div className='mt-2 gap-y-4'>
+                        <ThreadArea id={s.id} />
+                    </div>
                 </div>
             </div>
         </div>
