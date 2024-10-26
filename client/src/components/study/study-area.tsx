@@ -31,9 +31,9 @@ const StudyArea = async () => {
 
     return study.map(s => (
         <div className='mb-4' key={s.id}>
-            <div className='bg-secondary p-4 rounded-md flex gap-12'>
+            <div className='bg-secondary p-4 rounded-md md:flex gap-12'>
                 <div className='flex flex-col w-full'>
-                    <div className='flex flex-row items-center w-full bg-gray-300 dark:bg-gray-900 px-3 py-3 rounded-sm'>
+                    <div className='flex flex-col md:flex-row items-center w-full bg-gray-300 dark:bg-gray-900 px-3 py-3 rounded-sm'>
                         <div className='flex flex-row gap-2 items-center'>
                             <Link href={`/r/${s.id}`} className={cn(buttonVariants({ variant: 'link', className: 'p-0 font-semibold text-lg' }))}>
                                 {truncateString(s.name, 20)}
@@ -43,7 +43,7 @@ const StudyArea = async () => {
                             <span className='text-muted-foreground'>-</span>
                             <Badge className='rounded-sm'>{s.methodology}</Badge>
                         </div>
-                        <div className='ml-auto flex flex-row items-center gap-4'>
+                        <div className='ml-auto hidden lg:flex flex-row items-center gap-4'>
                             <div className='flex flex-row gap-1 items-center'>
                                 <p>
                                     <span className='text-muted-foreground'>{s.num_participants}</span>
@@ -57,6 +57,10 @@ const StudyArea = async () => {
                     </div>
                     <div className='mt-2 gap-y-4'>
                         <ThreadArea id={s.id} />
+                    </div>
+
+                    <div className='my-5 flex items-center justify-center lg:hidden'>
+                        <Button className='p-3'>Sugerir Nova Linha de Discussão</Button>
                     </div>
                 </div>
             </div>

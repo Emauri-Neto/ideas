@@ -27,13 +27,17 @@ const ThreadArea = async ({ id }: Props) => {
     return (
         <div className='flex flex-col'>
             {thread.map(t => (
-                <div className='flex flex-row items-center justify-between' key={t.id}>
+                <div className='flex flex-col lg:flex-row items-start lg:items-center' key={t.id}>
                     <Link href='' className={cn(buttonVariants({ variant: 'link', className: 'p-1' }))}>
                         <ArrowBigRightDashIcon />
                         <Badge className='rounded-sm'>{capitalize(t.status)}</Badge>
-                        {t.name}
+                        {t.name} /<span className='hidden md:block text-muted-foreground text-sm'>Responsável: Pessoa &rarr;</span>
                     </Link>
-                    <p className='text-sm text-muted-foreground'>Criado em {NormalizeDate(t.created_at)}</p>
+                    <div className='flex flex-row gap-2 items-center mx-8 lg:mx-2'>
+                        <p className='text-sm'>1 / 10</p>
+                        <span>-</span>
+                        <p className='text-sm'>Criado em {NormalizeDate(t.created_at)}</p>
+                    </div>
                 </div>
             ))}
         </div>
