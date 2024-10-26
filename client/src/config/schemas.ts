@@ -23,6 +23,12 @@ export const registerSchema = loginSchema
         path: ['confirmPassword']
     });
 
+export const threadSugestionSchema = z.object({
+    study: z.string().min(1, { message: 'Estudo obrigatório' }),
+    title: z.string().min(1, { message: 'Titulo obrigatório' }),
+    description: z.string().min(1, { message: 'Descrição obrigatória' })
+});
+
 export const studySchema = z.object({
     id: z.string().uuid(),
     name: z.string(),

@@ -4,7 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { listStudies } from '@/actions/list';
-import ThreadArea from '../thread/thread-area';
+import ThreadArea from '@/components/thread/thread-area';
+import AddThreadSuggestion from '@/components/thread/form/new-suggestion-form';
 
 const StudyArea = async () => {
     const study = await listStudies();
@@ -52,7 +53,10 @@ const StudyArea = async () => {
                                 </p>
                                 <User2Icon className='w-4 h-4' />
                             </div>
-                            <Button className='p-3'>Sugerir Nova Linha de Discussão</Button>
+                            {/* <Button className='p-3'>
+                                Sugerir Nova Linha de Discussão
+                            </Button> */}
+                            <AddThreadSuggestion title='Sugerir Nova Linha de Discussão' />
                         </div>
                     </div>
                     <div className='mt-2 gap-y-4'>
