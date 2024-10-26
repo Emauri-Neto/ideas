@@ -3,6 +3,7 @@ import { Ghost, User2Icon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import FormSugestion from "@/components/thread/form/formSugestion"
 
 const study = [
     {
@@ -67,7 +68,7 @@ const StudyArea = () => {
                                 </p>
                                 <User2Icon className='w-4 h-4' />
                             </div>
-                            <Button className='p-3'>Sugerir Nova Linha de Discussão</Button>
+                            <FormSugestion title='Sugerir Nova Linha de Discussão'/>
                         </div>
                     </div>
                     <div>ss</div>

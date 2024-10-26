@@ -22,3 +22,9 @@ export const registerSchema = loginSchema
         message: 'As senhas não coincidem.',
         path: ['confirmPassword']
     });
+
+export const threadSugestionSchema = z.object({
+    study: z.string().min(1, {message: 'Estudo obrigatório'}),
+    title: z.string().min(1, {message: 'Titulo obrigatório'}),
+    description: z.string().min(1, {message: 'Descrição obrigatória'})
+})
