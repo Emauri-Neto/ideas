@@ -4,8 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Header } from '@/components/auth/card/header';
 import Socials from '@/components/auth/card/socials';
 import LinkButton from '@/components/auth/card/link-button';
-import { Icons } from '@/config/icons';
-import Link from 'next/link';
+import { Icons } from '@/components/global/icons';
 
 interface CardProps {
     children: React.ReactNode;
@@ -19,9 +18,7 @@ export const AuthWrapper = ({ children, headerLabel, buttonLabel, buttonHref, sh
     return (
         <Card className='w-[400px] shadow-md'>
             <CardHeader className='flex flex-col items-center justify-center'>
-                <Link href='/'>
-                    <Icons.logo className='w-44 pr-4 mb-2' />
-                </Link>
+                <Icons.logo className='w-44 pr-4 mb-2' />
                 <Header label={headerLabel} />
                 <LinkButton label={buttonLabel} href={buttonHref} />
             </CardHeader>

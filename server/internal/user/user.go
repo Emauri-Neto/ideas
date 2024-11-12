@@ -23,9 +23,7 @@ func GetUser(db *db.Database) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		if err := json.NewEncoder(w).Encode(u); err != nil {
-			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
-		}
+		utils.WriteResponse(w, http.StatusOK, u)
 	}
 }
 

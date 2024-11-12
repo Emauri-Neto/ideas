@@ -1,9 +1,10 @@
 'use server';
 
 import * as z from 'zod';
-import { loginSchema } from '@/config/schemas';
+import { loginSchema } from '@/lib/schemas';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import Auth from './auth';
 
 export const login = async (values: z.infer<typeof loginSchema>) => {
     const fields = loginSchema.safeParse(values);
@@ -22,7 +23,7 @@ export const login = async (values: z.infer<typeof loginSchema>) => {
 
     if (!res.ok) {
         const errorData = await res.json();
-        return { error: errorData.message || 'Erro ao registrar.' };
+        return { error: errorData.message || 'Erro ao Entrar.' };
     }
 
     const data = await res.json();
@@ -32,7 +33,7 @@ export const login = async (values: z.infer<typeof loginSchema>) => {
         value: data.token!,
         httpOnly: true,
         sameSite: 'strict',
-        secure: process.env.NODE_ENV !== 'development',
+        secure: false,
         maxAge: 3600
     });
 

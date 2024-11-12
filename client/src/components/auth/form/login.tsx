@@ -1,7 +1,7 @@
 'use client';
 
 import * as z from 'zod';
-import { loginSchema } from '@/config/schemas';
+import { loginSchema } from '@/lib/schemas';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +13,7 @@ import { login } from '@/actions/login';
 import { useState, useTransition } from 'react';
 
 import { LogIn } from 'lucide-react';
-import FormError from '@/components/auth/form/form-error';
+import FormError from '@/components/auth/form/error';
 
 const LoginForm = () => {
     const [isPending, startTransition] = useTransition();

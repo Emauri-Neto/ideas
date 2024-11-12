@@ -1,7 +1,7 @@
 'use server';
 
 import * as z from 'zod';
-import { registerSchema } from '@/config/schemas';
+import { registerSchema } from '@/lib/schemas';
 import { redirect } from 'next/navigation';
 
 export const register = async (values: z.infer<typeof registerSchema>) => {

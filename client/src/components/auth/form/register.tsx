@@ -1,7 +1,7 @@
 'use client';
 
 import * as z from 'zod';
-import { registerSchema } from '@/config/schemas';
+import { registerSchema } from '@/lib/schemas';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AuthWrapper } from '@/components/auth/auth-wrapper';
-import FormError from '@/components/auth/form/form-error';
+import FormError from '@/components/auth/form/error';
 import { useState, useTransition } from 'react';
 import { LogIn } from 'lucide-react';
 import { register } from '@/actions/register';
