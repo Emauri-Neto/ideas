@@ -2,119 +2,71 @@ package study
 
 import (
 	"encoding/json"
-	"ideas/db"
-	"ideas/types"
-	"ideas/utils"
 	"net/http"
+	"server/db"
+	"server/types"
+	"server/utils"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
 func CreateStudy(db *db.Database) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var study types.Study
-		if err := json.NewDecoder(r.Body).Decode(&study); err != nil {
+	return func(w http.ResponseWriter, r *http.Request){
+		var s types.Study
+
+		if err := json.NewDecoder(r.Body).Decode(&s); err != nil {
 			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		userId := r.Context().Value("UserID").(string)
 
-		_s := db.CreateStudy(types.Study{
-			Id:             uuid.New().String(),
-			Name:           study.Name,
-			Objective:      study.Objective,
-			Methodology:    study.Methodology,
-			Num_participants: 1,
-			Max_participants: study.Max_participants,
-			Responsible_id: userId,
+		st, _st := db.CreateStudy(types.Study{
+			Id: uuid.New().String(),
+			Title: s.Title,
+			Objective: s.Objective,
+			Methodology: s.Methodology,
+			MaxParticipants: s.MaxParticipants,
+			Private: s.Private,
+			UserID: userId,
 		})
 
-		if _s != nil {
-			utils.WriteResponse(w, http.StatusInternalServerError, _s.Error())
+		if _st != nil {
+			utils.WriteResponse(w, http.StatusInternalServerError, _st.Error())
 			return
 		}
 
-		utils.WriteResponse(w, http.StatusCreated, "Estudo criado com sucesso")
-	}
-
-}
-
-func GetAllStudies(db *db.Database) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		studies, err := db.GetAllStudy()
-
-		if err != nil {
-			utils.WriteResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		utils.WriteResponse(w, http.StatusOK, studies)
+		utils.WriteResponse(w, http.StatusCreated, st)
 	}
 }
 
-func GetStudyById(db *db.Database) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		studyId := mux.Vars(r)["id"]
-
-		study, err := db.GetStudyById(studyId)
-
-		if err != nil {
-			utils.WriteResponse(w, http.StatusNotFound, "Estudo não encontrado")
-			return
-		}
-
-		utils.WriteResponse(w, http.StatusOK, study)
-	}
-}
-
-func DeleteStudy(db *db.Database) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		studyId := mux.Vars(r)["id"]
-
+func ListStudies(db *db.Database) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request){
 		userId := r.Context().Value("UserID").(string)
 
-		if err := db.IsStudyOwner(studyId, userId); err != nil {
-			utils.WriteResponse(w, http.StatusUnauthorized, "Você não tem permissão para remover este estudo")
+		st, _st := db.ListStudies(userId)
+
+		if _st != nil {
+			utils.WriteResponse(w, http.StatusBadRequest, _st.Error())
 			return
 		}
 
-		err := db.DeleteStudy(studyId)
-		if err != nil {
-			utils.WriteResponse(w, http.StatusInternalServerError, "Erro ao remover estudo")
-			return
-		}
-
-		utils.WriteResponse(w, http.StatusOK, "Estudo removido com sucesso")
+		utils.WriteResponse(w, http.StatusOK, st)
 	}
 }
 
-func UpdateStudy(db *db.Database) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		studyId := mux.Vars(r)["id"]
+func GetStudy(db *db.Database) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request){
+		id := mux.Vars(r)["stID"]
 
-		var study types.Study
-		
-		if err := json.NewDecoder(r.Body).Decode(&study); err != nil {
-			utils.WriteResponse(w, http.StatusBadRequest, err.Error())
+		st, _st := db.GetStudy(id)
+
+		if _st != nil {
+			utils.WriteResponse(w, http.StatusOK, _st)
 			return
 		}
 
-		userId := r.Context().Value("UserID").(string)
-
-		if err := db.IsStudyOwner(studyId, userId); err != nil {
-			utils.WriteResponse(w, http.StatusUnauthorized, "Você não tem permissão para alterar este estudo")
-			return
-		}
-
-		study.Id = studyId
-		err := db.UpdateStudy(study)
-		if err != nil {
-			utils.WriteResponse(w, http.StatusInternalServerError, "Erro ao atualizar estudo")
-			return
-		}
-
-		utils.WriteResponse(w, http.StatusOK, "Estudo atualizado com sucesso")
+		utils.WriteResponse(w, http.StatusOK, st)
 	}
 }

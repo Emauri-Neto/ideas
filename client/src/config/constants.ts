@@ -1,4 +1,5 @@
-import { LucideProps, HomeIcon, Library, Settings } from 'lucide-react';
+import { Icons } from '@/components/global/icons';
+import { HomeIcon, Library, LucideProps, Settings } from 'lucide-react';
 
 export interface MenuProps {
     title: string;
@@ -25,3 +26,5 @@ export const MenuItens: Menu = (id) => [
         icon: Settings
     }
 ];
+
+export const API_BASE_URL = 'http://localhost:4367';

@@ -2,43 +2,44 @@
 
 import { Icons } from '@/components/global/icons';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { usePathname, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { MenuItens } from '@/config/constants';
 import SidebarItens from '@/components/nav/sidebar-itens';
-import { BookA, MenuIcon } from 'lucide-react';
+import { BookA, MenuIcon, TelescopeIcon } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import Navbar from '@/components/nav/navbar';
+import { useEffect, useState } from 'react';
+import { ListStudies } from '@/actions/study';
+import { Study } from '@/types';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
 
-interface SidebarProps {
-    activeStudyId: string;
-}
-
-const studies = [
-    {
-        id: 'aaaaaa',
-        name: 'Estudo legal'
-    },
-    {
-        id: 'bbbbb',
-        name: 'Estudo legal3'
-    },
-    {
-        id: 'cccccc',
-        name: 'Estudo legal2'
-    }
-];
-
-export default function Sidebar({ activeStudyId }: SidebarProps) {
+export default function Sidebar() {
     const router = useRouter();
     const pathname = usePathname();
+    const params = useParams();
+
+    const [selectedId, setSelectedId] = useState(params.studyID || '');
 
     function OnChange(id: string) {
-        router.push(`r/study/${id}`);
+        router.push(`/r/study/${id}`);
     }
 
-    const menu = MenuItens(activeStudyId);
+    useEffect(() => {
+        setSelectedId(params.studyID || '');
+    }, [pathname]);
+
+    const { data, isPending, isFetched } = useQuery({
+        queryKey: ['study-data'],
+        queryFn: ListStudies
+    });
+
+    const studies = (data as unknown as Study[]) || [];
+
+    const menu = MenuItens(selectedId as string);
 
     const SidebarSection = (
         <div className='bg-secondary flex-none relative p-4 h-full w-[250px] flex flex-col gap-4 overflow-hidden'>
@@ -46,17 +47,17 @@ export default function Sidebar({ activeStudyId }: SidebarProps) {
                 <Icons.logo className='w-44 h-16 fill-black dark:fill-white' />
             </div>
 
-            <Select defaultValue={activeStudyId} onValueChange={OnChange}>
-                <SelectTrigger className='mt-24 text-muted-foreground bg-transparent'>
+            <Select value={selectedId as string} onValueChange={OnChange}>
+                <SelectTrigger className='mt-24 text-muted-foreground bg-transparent border-gray-300 dark:border-gray-900'>
                     <SelectValue placeholder='Escolha um estudo'></SelectValue>
                 </SelectTrigger>
                 <SelectContent className=' backdrop-blur-xl'>
                     <SelectGroup>
                         <SelectLabel>Estudos</SelectLabel>
-                        <Separator />
+                        <Separator className='mb-2' />
                         {studies.map(ws => (
                             <SelectItem key={ws.id} value={ws.id}>
-                                {ws.name}
+                                {ws.title}
                             </SelectItem>
                         ))}
                     </SelectGroup>
@@ -79,21 +80,33 @@ export default function Sidebar({ activeStudyId }: SidebarProps) {
                 </ul>
             </nav>
 
-            <Separator className='w-full bg-gray-400 dark:bg-gray-600' />
+            <Separator className='w-full bg-secondary' />
             <h2 className='mt-4 w-full font-semibold'>Estudos</h2>
             <nav className='w-full'>
-                <ul>
-                    {studies.map(item => (
-                        <SidebarItens
-                            href={`/r/study/${item.id}`}
-                            selected={pathname === `/r/study/${item.id}`}
-                            title={item.name}
-                            notifications={0}
-                            key={item.id}
-                            icon={BookA}
-                        />
-                    ))}
-                </ul>
+                {studies.length > 0 ? (
+                    <ul>
+                        {studies.map(item => (
+                            <SidebarItens
+                                href={`/r/study/${item.id}`}
+                                selected={pathname === `/r/study/${item.id}`}
+                                title={item.title}
+                                notifications={0}
+                                key={item.id}
+                                icon={BookA}
+                            />
+                        ))}
+                    </ul>
+                ) : (
+                    <span className='text-muted-foreground text-sm'>
+                        <p>
+                            Nenhum estudo foi adicionado ainda.{' '}
+                            <Link href='/r/study' className={cn(buttonVariants({ variant: 'link', className: 'p-0 text-sm' }))}>
+                                {' '}
+                                Que tal começar agora?
+                            </Link>
+                        </p>
+                    </span>
+                )}
             </nav>
         </div>
     );

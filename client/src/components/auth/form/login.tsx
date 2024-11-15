@@ -9,16 +9,25 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AuthWrapper } from '@/components/auth/auth-wrapper';
-import { login } from '@/actions/login';
-import { useState, useTransition } from 'react';
-
-import { LogIn } from 'lucide-react';
+import { Login } from '@/actions/auth';
+import { Loader2Icon, LogIn } from 'lucide-react';
 import FormError from '@/components/auth/form/error';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 const LoginForm = () => {
-    const [isPending, startTransition] = useTransition();
-
-    const [err, setErr] = useState<string | undefined>('');
+    const router = useRouter();
+    const {
+        mutate: SignIn,
+        isPending,
+        isError,
+        error
+    } = useMutation({
+        mutationFn: Login,
+        onSuccess: () => {
+            router.replace('/');
+        }
+    });
 
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
@@ -29,9 +38,7 @@ const LoginForm = () => {
     });
 
     const onSubmit = (values: z.infer<typeof loginSchema>) => {
-        startTransition(() => {
-            login(values).then(data => setErr(data?.error));
-        });
+        SignIn(values);
     };
 
     return (
@@ -68,10 +75,16 @@ const LoginForm = () => {
                             )}
                         />
                     </div>
-                    <FormError message={err} />
+                    <FormError message={error?.message} isError={isError} />
                     <Button type='submit' className='w-full gap-1 font-semibold' disabled={!form.formState.isValid || isPending}>
-                        Entrar
-                        <LogIn className='w-4 h-4' />
+                        {isPending ? (
+                            <Loader2Icon className='animate-spin w-4 h-4' />
+                        ) : (
+                            <>
+                                <span>Entrar</span>
+                                <LogIn className='w-4 h-4' />
+                            </>
+                        )}
                     </Button>
                 </form>
             </Form>

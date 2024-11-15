@@ -14,7 +14,7 @@ func GetEnv(key string) (string, error) {
 		return val, nil
 	}
 
-	return "", fmt.Errorf("variavel ambiente %s nao encontrada", key)
+	return "", fmt.Errorf("environment variable %s is not set", key)
 }
 
 func WriteResponse(w http.ResponseWriter, status uint, payload any) error {

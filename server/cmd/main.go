@@ -2,19 +2,20 @@ package main
 
 import (
 	"fmt"
-	"ideas/cmd/api"
-	"ideas/db"
-	"ideas/utils"
+	"server/cmd/api"
+	"server/db"
+	"server/internal/auth"
+	"server/utils"
 )
 
 func main() {
-	if err := MountWebServer(); err != nil {
-		panic(fmt.Sprintf("Erro montando o webserver -> %s", err))
+	if err := MountWebserver(); err != nil {
+		panic(fmt.Sprintf("error mounting webserver -> %s", err))
 	}
 }
 
-func MountWebServer() error {
-	db, _db := db.MountDB()
+func MountWebserver() error {
+	db, _db := db.MountDatabase()
 
 	if _db != nil {
 		return fmt.Errorf("%s", _db)
@@ -30,7 +31,15 @@ func MountWebServer() error {
 		return fmt.Errorf("%s", _port)
 	}
 
-	server := api.Serve(fmt.Sprintf(":%s", port), db)
+	secret, _secret := utils.GetEnv("JWT_SECRET")
+
+	if _secret != nil {
+		return fmt.Errorf("%s", _secret)
+	}
+
+	jwt := auth.DefaultOpts([]byte(secret))
+
+	server := api.Serve(fmt.Sprintf(":%s", port), db, jwt)
 
 	if err := server.Run(); err != nil {
 		return fmt.Errorf("%s", err)

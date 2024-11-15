@@ -1,31 +1,41 @@
 'use server';
 
-import { User } from '@/types';
+import api from '@/lib/api';
+import { loginSchema, registerSchema } from '@/lib/schemas';
 import { cookies } from 'next/headers';
+import { z } from 'zod';
 
-export default async function Auth() {
-    const cookie = cookies().get('IAUTH')?.value;
+export const Login = async (values: z.infer<typeof loginSchema>) => {
+    const data = await api.post<{ Access: string; Refresh: string }>('/auth/login', values);
+    console.log('data ->', data);
 
-    try {
-        const response = await fetch('http://localhost:4367/api/user', {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${cookie}`
-            }
-        });
+    cookies().set({
+        name: 'access',
+        //@ts-expect-error
+        value: data.Access,
+        path: '/',
+        httpOnly: true,
+        secure: false,
+        maxAge: 15 * 60
+    });
 
-        if (!response.ok) {
-            console.log('Erro na req ->', response.statusText);
-        }
+    cookies().set({
+        name: 'refresh',
+        //@ts-expect-error
+        value: data.Refresh,
+        path: '/',
+        httpOnly: true,
+        secure: false,
+        maxAge: 7 * 24 * 60 * 60
+    });
 
-        const res = await response.json();
+    return data;
+};
 
-        const user: User = res.data;
+export const Register = async (values: z.infer<typeof registerSchema>) => api.post('/auth/register', values);
 
-        console.log('user', user);
-
-        return user;
-    } catch (error) {
-        console.log('Erro durante a requisição 🤓🤓🤓 ->', error);
-    }
-}
+export const Logout = async () => {
+    cookies().delete('refresh');
+    cookies().delete('access');
+    return api.get('/auth/logout');
+};

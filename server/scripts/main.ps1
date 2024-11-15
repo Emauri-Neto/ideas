@@ -5,11 +5,6 @@ $env:DB_PORT = "5432"
 $env:DB_HOST = "0.0.0.0"
 $env:DB_USER = "admin"
 $env:JWT_SECRET = "segredo"
-
-
-# Caso usem isso, só precisa rodar uma vez e depois recomentar
-# $port = $env:HTTP_PORT
-# $ruleName = "Allow HTTP_PORT $port"
-# netsh advfirewall firewall add rule name=$ruleName dir=in action=allow protocol=TCP localport=$port
+$env:RESEND_API_KEY = "re_itnpGX5k_Jmt7jM11Zh834afryDH56iBP"
 
 go run $PSScriptRoot\..\cmd\main.go

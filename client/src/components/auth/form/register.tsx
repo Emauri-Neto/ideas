@@ -10,29 +10,36 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AuthWrapper } from '@/components/auth/auth-wrapper';
 import FormError from '@/components/auth/form/error';
-import { useState, useTransition } from 'react';
-import { LogIn } from 'lucide-react';
-import { register } from '@/actions/register';
+import { Loader2Icon, LogIn } from 'lucide-react';
+import { Register } from '@/actions/auth';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 const RegisterForm = () => {
-    const [isPending, startTransition] = useTransition();
+    const router = useRouter();
 
-    const [err, setErr] = useState<string | undefined>('');
+    const {
+        mutate: SignUp,
+        isPending,
+        isError
+    } = useMutation({
+        mutationFn: Register,
+        onSuccess: () => {
+            router.replace('/');
+        }
+    });
 
     const form = useForm<z.infer<typeof registerSchema>>({
         resolver: zodResolver(registerSchema),
         defaultValues: {
             email: '',
             password: '',
-            confirmPassword: '',
-            name: ''
+            confirmPassword: ''
         }
     });
 
     const onSubmit = (values: z.infer<typeof registerSchema>) => {
-        startTransition(() => {
-            register(values).then(data => setErr(data?.error));
-        });
+        SignUp(values);
     };
 
     return (
@@ -40,20 +47,6 @@ const RegisterForm = () => {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
                     <div className='space-y-4'>
-                        <FormField
-                            control={form.control}
-                            name='name'
-                            disabled={isPending}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nome</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} placeholder='João Exemplo' />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
                         <FormField
                             control={form.control}
                             name='email'
@@ -97,10 +90,16 @@ const RegisterForm = () => {
                             )}
                         />
                     </div>
-                    <FormError message={err} />
+                    <FormError message={'Email ou senha inválidos'} isError={isError} />
                     <Button type='submit' className='w-full gap-1 font-semibold' disabled={!form.formState.isValid || isPending}>
-                        Criar conta
-                        <LogIn className='w-4 h-4' />
+                        {isPending ? (
+                            <Loader2Icon className='animate-spin w-4 h-4' />
+                        ) : (
+                            <>
+                                <span>Entrar</span>
+                                <LogIn className='w-4 h-4' />
+                            </>
+                        )}
                     </Button>
                 </form>
             </Form>

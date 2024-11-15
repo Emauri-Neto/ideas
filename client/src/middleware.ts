@@ -1,26 +1,27 @@
-import { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 const authRoutes: string[] = ['/sign-in', '/sign-up'];
 const publicRoutes: string[] = [];
 
 export default function middleware(req: NextRequest) {
-    // const { nextUrl } = req;
+    const { nextUrl } = req;
 
-    // const isLogged = !!req.cookies.get('refreshToken');
+    const isLogged = !!req.cookies.get('refresh');
 
-    // const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-    // const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+    const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+    const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-    // if (isAuthRoute) {
-    //     if (isLogged) {
-    //         return Response.redirect(new URL('/', nextUrl));
-    //     }
-    //     return null;
-    // }
+    if (isAuthRoute) {
+        if (isLogged) {
+            return Response.redirect(new URL('/', nextUrl));
+        }
+        return null;
+    }
 
-    // if (!isLogged && !isPublicRoute) {
-    //     return Response.redirect(new URL('/sign-in', nextUrl));
-    // }
+    if (!isLogged && !isPublicRoute) {
+        return Response.redirect(new URL('/sign-in', nextUrl));
+    }
 
     return null;
 }

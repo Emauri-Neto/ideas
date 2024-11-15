@@ -15,8 +15,7 @@ export const registerSchema = loginSchema
             .min(6)
             .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
                 message: 'A senha deve ter no mínimo 6 caracteres, incluindo 1 letra maiúscula, 1 letra minúscula, 1 número e 1 caractere especial.'
-            }),
-        name: z.string().min(1, { message: 'Nome é obrigatório.' })
+            })
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: 'As senhas não coincidem.',
@@ -31,7 +30,7 @@ export const threadSugestionSchema = z.object({
 
 export const studySchema = z.object({
     id: z.string().uuid(),
-    name: z.string(),
+    title: z.string(),
     objective: z.string(),
     methodology: z.string(),
     num_participants: z.number(),

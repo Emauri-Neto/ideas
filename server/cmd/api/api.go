@@ -2,63 +2,56 @@ package api
 
 import (
 	"fmt"
-	"ideas/db"
-	"ideas/internal/auth"
-	"ideas/internal/invitation"
-	"ideas/internal/study"
-	"ideas/internal/thread"
-	"ideas/internal/user"
 	"net/http"
+	"server/db"
+	"server/internal/auth"
+	"server/internal/middleware"
+	"server/internal/study"
+	"server/internal/user"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
 type WebServer struct {
 	addr string
-	db   *db.Database
+	db *db.Database
+	secret *auth.JWTConfig
 }
 
-func Serve(addr string, db *db.Database) *WebServer {
+func Serve(addr string, db *db.Database, secret *auth.JWTConfig) *WebServer {
 	return &WebServer{
 		addr: addr,
-		db:   db,
+		db: db,
+		secret: secret,
 	}
 }
 
 func (s *WebServer) Run() error {
 	router := mux.NewRouter()
-	publicrouter := router.PathPrefix("/s").Subrouter()
-	subrouter := router.PathPrefix("/api").Subrouter()
 	authrouter := router.PathPrefix("/auth").Subrouter()
-	commomrouter := router.PathPrefix("/r").Subrouter()
+	protectedrouter := router.PathPrefix("/api").Subrouter()
 
-	authrouter.HandleFunc("/register", user.SignUp(s.db)).Methods("POST")
-	authrouter.HandleFunc("/login", user.SignIn(s.db)).Methods("POST")
+	authrouter.HandleFunc("/register", user.SignUp(s.db, s.secret)).Methods("POST")
+	authrouter.HandleFunc("/login", user.SignIn(s.db, s.secret)).Methods("POST")
+	authrouter.HandleFunc("/refresh", user.RefreshAccessToken(s.db, s.secret)).Methods("GET")
+	authrouter.HandleFunc("/logout", user.Logout(s.db, s.secret)).Methods("GET")
 
-	subrouter.HandleFunc("/user", user.GetUser(s.db)).Methods("GET")
-	subrouter.HandleFunc("/user", user.UpdateUser(s.db)).Methods("PATCH")
-	subrouter.HandleFunc("/user", user.DeleteUser(s.db)).Methods("DELETE")
-	subrouter.HandleFunc("/user/invitations", invitation.ListInvitations(s.db)).Methods("GET")
+	protectedrouter.HandleFunc("/study", study.CreateStudy(s.db)).Methods("POST")
+	protectedrouter.HandleFunc("/study", study.ListStudies(s.db)).Methods("GET")
+	protectedrouter.HandleFunc("/study/{stID}", study.GetStudy(s.db)).Methods("GET")
 
-	subrouter.HandleFunc("/study/invitation/{id}", invitation.AcceptRefuseInvite(s.db)).Methods("GET")
+	protectedrouter.HandleFunc("/user", user.GetUser(s.db)).Methods("GET")
 
-	commomrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")
-	commomrouter.HandleFunc("/study/{id}/thread", thread.ListThreads(s.db)).Methods("GET")
+	protectedrouter.Use(middleware.IsAuthenticated(s.secret))
 
-	subrouter.HandleFunc("/study/create", study.CreateStudy(s.db)).Methods("POST")
-	publicrouter.HandleFunc("/study", study.GetAllStudies(s.db)).Methods("GET")
-	subrouter.HandleFunc("/study/{id}", study.GetStudyById(s.db)).Methods("GET")
-	subrouter.HandleFunc("/study/{id}", study.DeleteStudy(s.db)).Methods("DELETE")
-	subrouter.HandleFunc("/study/{id}", study.UpdateStudy(s.db)).Methods("PUT")
-	subrouter.HandleFunc("/study/{id}/thread", thread.CreateThread(s.db)).Methods("POST")
-	subrouter.HandleFunc("/study/{id}/users", user.ListUsersStudy(s.db)).Methods("GET")
-	subrouter.HandleFunc("/study/{id}/thread", thread.ListThreads(s.db)).Methods("GET")
+	cors := handlers.CORS(
+		handlers.AllowCredentials(),
+		handlers.AllowedOrigins([]string{"http://localhost:3000"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
+	)
 
-	subrouter.HandleFunc("/thread/{id}/invite", invitation.CreateInvitation(s.db)).Methods("POST")
-	subrouter.HandleFunc("/thread/{id}/users", user.ListUsersThread(s.db)).Methods("GET")
-
-	subrouter.Use(auth.IsAuthenticated)
-
-	fmt.Printf("Servidor aqui -> %s 🔥", s.addr)
-	return http.ListenAndServe(s.addr, router)
+	fmt.Printf("Server running on port%s 🔥", s.addr)
+	return http.ListenAndServe(s.addr, cors(router))
 }

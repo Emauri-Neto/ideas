@@ -6,11 +6,8 @@ func (d Driver) Schema() []string {
 	return []string{
 		createMigrationTable(),
 		createUserTable(),
+		createVerificationCodeTable(),
+		createSessionTable(),
 		createStudyTable(),
-		createDiscussionThreadTable(),
-		createInvitationTable(),
-		createUsersInvitationTable(),
-		createUsersStudyTable(),
-		createUsersThreadTable(),
 	}
 }

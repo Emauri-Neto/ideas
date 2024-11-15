@@ -11,12 +11,12 @@ interface SidebarItensProps extends MenuProps {
 
 export default function SidebarItens({ href, icon: Icon, notifications, selected, title }: SidebarItensProps) {
     return (
-        <li className='cursor-pointer my-2'>
+        <div className='cursor-pointer my-2'>
             <Link
                 className={cn(
                     buttonVariants({
                         variant: selected ? 'default' : 'ghost',
-                        className: selected ? '' : 'hover:bg-gray-400/60 hover:dark:bg-gray-900'
+                        className: selected ? '' : 'hover:bg-gray-300 hover:dark:bg-gray-900'
                     })
                 )}
                 href={href}
@@ -26,6 +26,6 @@ export default function SidebarItens({ href, icon: Icon, notifications, selected
                     <span className={cn('font-medium transition-all truncate w-32')}>{title}</span>
                 </div>
             </Link>
-        </li>
+        </div>
     );
 }

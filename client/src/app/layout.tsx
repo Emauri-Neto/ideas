@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Manrope } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme/theme-provider';
+import { QueryClientProvider } from '@tanstack/react-query';
+import client from '@/lib/query-client';
 
 export const metadata: Metadata = {
     title: 'Ideas',
@@ -19,9 +21,11 @@ export default function RootLayout({
     return (
         <html lang='en'>
             <body className={`${font.className} antialiased min-h-screen h-full`}>
-                <ThemeProvider attribute='class' defaultTheme='light' enableSystem disableTransitionOnChange>
-                    {children}
-                </ThemeProvider>
+                <QueryClientProvider client={client}>
+                    <ThemeProvider attribute='class' defaultTheme='light' enableSystem disableTransitionOnChange>
+                        {children}
+                    </ThemeProvider>
+                </QueryClientProvider>
             </body>
         </html>
     );
