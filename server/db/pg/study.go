@@ -26,9 +26,59 @@ func (d Driver) CreateStudy() string {
 }
 
 func (d Driver) ListStudies() string {
-	return "SELECT * FROM study WHERE (_private = false) OR (_private = true AND user_id = $1)"
+	return `
+		SELECT 
+			s.id AS study_id, 
+			s.title, 
+			s.objective, 
+			s.methodology,
+			s.user_id as study_owner,
+			s.max_participants, 
+			s.num_participants, 
+			s.participation_type, 
+			s._private, 
+			s.created_at AS study_created_at, 
+			s.updated_at AS study_updated_at,
+			t.id AS thread_id, 
+			t.name AS thread_name, 
+			t.deadline AS thread_deadline, 
+			t.responsible_user AS responsible_user_id, 
+			u.id AS user_id, 
+			u.name AS user_name, 
+			u.email AS user_email
+		FROM study s
+		LEFT JOIN thread t ON t.study_id = s.id
+		LEFT JOIN users u ON u.id = t.responsible_user
+		WHERE (_private = false) OR (_private = true AND user_id = $1)
+		ORDER BY s.id, t.id;
+	`
 }
 
 func (d Driver) GetStudy() string {
-	return "SELECT * FROM study WHERE id=$1"
+	return `
+		SELECT 
+			s.id AS study_id, 
+			s.title, 
+			s.objective, 
+			s.methodology,
+			s.user_id as study_owner,
+			s.max_participants, 
+			s.num_participants, 
+			s.participation_type, 
+			s._private, 
+			s.created_at AS study_created_at, 
+			s.updated_at AS study_updated_at,
+			t.id AS thread_id, 
+			t.name AS thread_name, 
+			t.deadline AS thread_deadline, 
+			t.responsible_user AS responsible_user_id, 
+			u.id AS user_id, 
+			u.name AS user_name, 
+			u.email AS user_email
+		FROM study s
+		LEFT JOIN thread t ON t.study_id = s.id
+		LEFT JOIN users u ON u.id = t.responsible_user
+		WHERE s.id = $1
+		ORDER BY t.id;
+	`
 }

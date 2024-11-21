@@ -4,6 +4,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import { QueryClientProvider } from '@tanstack/react-query';
 import client from '@/lib/query-client';
+import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
     title: 'Ideas',
@@ -25,6 +26,7 @@ export default function RootLayout({
                     <ThemeProvider attribute='class' defaultTheme='light' enableSystem disableTransitionOnChange>
                         {children}
                     </ThemeProvider>
+                    <Toaster />
                 </QueryClientProvider>
             </body>
         </html>

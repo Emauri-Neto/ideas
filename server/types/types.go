@@ -7,6 +7,7 @@ import (
 type User struct {
 	Id        string    `json:"id" db:"id"`
 	Email     string    `json:"email" db:"email"`
+	Name      *string   `json:"name" db:"name"`
 	Password  string    `json:"-" db:"password"`
 	Verified  bool      `json:"_verified" db:"_verified"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
@@ -46,6 +47,15 @@ type Study struct {
 	ParticipationType *string `json:"participation_type" db:"participation_type"`
 	Private           bool    `json:"_private" db:"_private"`
 	UserID            string  `json:"user_id" db:"user_id"`
+	Threads *[]Thread `json:"threads"`
 	CreatedAt         string  `json:"created_at" db:"created_at"`
 	UpdatedAt         string  `json:"updated_at" db:"updated_at"`
+}
+
+type Thread struct {
+	Id string `json:"id" db:"id"`
+	Name string `json:"name" db:"name"`
+	DeadLine string `json:"deadline" db:"thread_deadline"`
+	ResponsibleID string `json:"responsible_user" db:"responsible_user"`
+	StudyID string `json:"study_id" db:"study_id"`
 }

@@ -34,6 +34,8 @@ type queries interface {
 	CreateStudy() string
 	ListStudies() string
 	GetStudy() string
+
+	CreateThread() string
 }
 
 func MountDatabase() (*Database, error) {

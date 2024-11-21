@@ -7,6 +7,7 @@ import (
 	"server/internal/auth"
 	"server/internal/middleware"
 	"server/internal/study"
+	"server/internal/study/thread"
 	"server/internal/user"
 
 	"github.com/gorilla/handlers"
@@ -40,6 +41,7 @@ func (s *WebServer) Run() error {
 	protectedrouter.HandleFunc("/study", study.CreateStudy(s.db)).Methods("POST")
 	protectedrouter.HandleFunc("/study", study.ListStudies(s.db)).Methods("GET")
 	protectedrouter.HandleFunc("/study/{stID}", study.GetStudy(s.db)).Methods("GET")
+	protectedrouter.HandleFunc("/study/{stID}", thread.CreateThread(s.db)).Methods("POST")
 
 	protectedrouter.HandleFunc("/user", user.GetUser(s.db)).Methods("GET")
 

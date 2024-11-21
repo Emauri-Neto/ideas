@@ -9,5 +9,7 @@ func (d Driver) Schema() []string {
 		createVerificationCodeTable(),
 		createSessionTable(),
 		createStudyTable(),
+		createThreadTable(),
+		createThreadUsersTable(),
 	}
 }

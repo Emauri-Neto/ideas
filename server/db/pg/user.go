@@ -5,6 +5,7 @@ func createUserTable() string {
 		CREATE TABLE users (
 			id UUID PRIMARY KEY,
 			email TEXT UNIQUE NOT NULL,
+			name TEXT,
 			password TEXT NOT NULL,
 			_verified BOOLEAN DEFAULT FALSE,
 			created_at TIMESTAMPTZ DEFAULT (CURRENT_TIMESTAMP - INTERVAL '3 hours'),
