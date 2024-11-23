@@ -1,13 +1,26 @@
+'use client';
+
+import { ListStudies } from '@/actions/study';
+import StudyCard from '@/components/study/card/card';
 import CreateStudyForm from '@/components/study/form/create';
 import { Button } from '@/components/ui/button';
 import Modal from '@/components/ui/modal';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Study as St } from '@/types';
+import { useQuery } from '@tanstack/react-query';
 import { BookPlusIcon } from 'lucide-react';
 import React from 'react';
 
 type Props = {};
 
-const Study = (props: Props) => {
+const Study = ({}: Props) => {
+    const { data, isFetched, isLoading } = useQuery({
+        queryKey: ['study-data'],
+        queryFn: ListStudies
+    });
+
+    const study = data as unknown as St[] | undefined;
+
     return (
         <div>
             <Tabs defaultValue='study' className='mt-6'>
@@ -30,6 +43,14 @@ const Study = (props: Props) => {
                         <CreateStudyForm />
                     </Modal>
                 </div>
+
+                <TabsContent value='study'>
+                    <div className='grid grid-cols-5 my-5'>
+                        {study?.map(st => (
+                            <StudyCard key={st.id} st={st} />
+                        ))}
+                    </div>
+                </TabsContent>
             </Tabs>
         </div>
     );

@@ -8,6 +8,14 @@ export interface User {
     updated_at: Date;
 }
 
+export interface Thread {
+    readonly id: string;
+    name: string;
+    deadline: Date;
+    responsible_user: string;
+    study_id: string;
+}
+
 export interface Study {
     readonly id: string;
     title: string;
@@ -17,6 +25,7 @@ export interface Study {
     num_participants?: number;
     _private: boolean;
     user_id: string;
+    threads: Thread[];
     created_at: Date;
     updated_at: Date;
 }

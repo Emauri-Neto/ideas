@@ -7,7 +7,6 @@ import { z } from 'zod';
 
 export const Login = async (values: z.infer<typeof loginSchema>) => {
     const data = await api.post<{ Access: string; Refresh: string }>('/auth/login', values);
-    console.log('data ->', data);
 
     cookies().set({
         name: 'access',
